@@ -61,4 +61,5 @@ Pre-launch. Known gaps:
   any six-digit code is accepted.
 - The "Countries served", "Industries supported", and "Reviews and ratings"
   cards are explicitly labelled placeholders pending real content.
-- "Book a Call" links point at `alliancestreet.ae` rather than a booking flow.
+- Privacy Policy and Terms are drafted but **await legal review** —
+  every `[TO CONFIRM]` marker needs a real answer before launch.

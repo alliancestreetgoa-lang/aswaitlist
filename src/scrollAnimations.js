@@ -20,7 +20,7 @@ function setCounterFinal(el) {
   el.textContent = target + (el.dataset.suffix || '');
 }
 
-function releaseAntiFlash() {
+export function releaseAntiFlash() {
   document.documentElement.classList.remove('js-anim');
 }
 

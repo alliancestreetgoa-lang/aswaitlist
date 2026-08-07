@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import {
@@ -7,41 +7,17 @@ import {
   Mail, Phone,
 } from 'lucide-react';
 import './App.css';
-import { runScrollAnimations } from './scrollAnimations';
+import { runScrollAnimations, releaseAntiFlash } from './scrollAnimations';
+import { LegalPage } from './LegalPages';
+import {
+  BOOKING_URL, asset, BG, BONE, BONE_DIM, LINE, WHITE, CARD_INK, CARD_MUTED,
+  CARD_FAINT, CARD_LABEL, CARD_BORDER, INPUT_BORDER, GLASS_FIELD,
+  GLASS_FIELD_BORDER, GLASS_DIVIDER, GLASS_DIM, GLASS_PANEL, LIGHT_BG,
+} from './tokens';
 
 gsap.registerPlugin(useGSAP);
 
-const BOOKING_URL = 'https://www.alliancestreet.ae';
 
-// Vite only rewrites asset paths it can see (CSS url(), imports). Plain
-// strings in JSX and inline styles need the base prefix applied by hand,
-// or they 404 when the site is served from a subpath (GitHub Pages).
-const asset = (p) => `${import.meta.env.BASE_URL}${p.replace(/^\//, '')}`;
-
-// alliancestreet.ae background palette (dark canvas)
-const BG = '#0A0A0A';
-const BONE = '#EDEAE3';
-const BONE_DIM = '#9A9A9F';
-const LINE = 'rgba(255,255,255,0.11)';
-
-// white "paperwork" card palette (form, testimonials, stat cards)
-const WHITE = '#FFFFFF';
-const CARD_INK = '#111113';
-const CARD_MUTED = '#55555C';
-const CARD_FAINT = '#7C7C84';
-const CARD_LABEL = '#3A3A42';
-const CARD_BORDER = '#E7E7EC';
-const INPUT_BORDER = '#D8D8DE';
-
-// dark-glass form palette (hero signup card sits over the skyline photo)
-const GLASS_FIELD = 'rgba(18,18,20,0.88)';
-const GLASS_FIELD_BORDER = 'rgba(255,255,255,0.22)';
-const GLASS_DIVIDER = 'rgba(255,255,255,0.16)';
-const GLASS_DIM = '#CFCFD4';   // dim text that still clears AA over the photo
-const GLASS_PANEL = 'rgba(18,18,20,0.60)';
-
-// alternating section tone: sections run black -> white -> black -> ...
-const LIGHT_BG = '#FFFFFF';
 
 const COUNTRIES = [
   { code: 'GB', label: 'United Kingdom (+44)', dial: '+44' },
@@ -115,7 +91,7 @@ function Header() {
       <a href="#top"><Logo /></a>
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         <span className="asc-support" style={{ fontSize: 15, color: BONE_DIM }}>Already need support?</span>
-        <a href={BOOKING_URL} target="_blank" rel="noopener" className="asc-book-link" style={{
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-book-link" style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '.04em', fontSize: 17, color: WHITE, background: '#E4141A',
@@ -126,7 +102,7 @@ function Header() {
   );
 }
 
-function StepBar({ n, active }) {
+function StepBar({ active }) {
   return <div style={{ height: 4, borderRadius: 999, background: active ? '#E4141A' : 'rgba(255,255,255,0.20)' }} />;
 }
 
@@ -279,7 +255,7 @@ function WebinarForm() {
             <span style={{ fontSize: 16, fontWeight: 600, color: BONE }}>{email || '—'}</span>
             <span style={{ fontSize: 16, fontWeight: 600, color: BONE }}>{fullPhone}</span>
           </div>
-          <a href={BOOKING_URL} target="_blank" rel="noopener" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: '#E4141A' }}>
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: '#E4141A' }}>
             Book a call in the meantime <ArrowRight size={18} />
           </a>
         </div>
@@ -515,7 +491,7 @@ function Book() {
         </h2>
         <p className="reveal" style={{ margin: 0, maxWidth: 720, fontSize: 19, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>If you are currently considering a UAE company, international structure, relocation, banking solution, or business expansion, you can speak with our team before the webinar.</p>
         <div className="asc-cta-row book-cta" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16, marginTop: 8 }}>
-          <a href={BOOKING_URL} target="_blank" rel="noopener" className="asc-book-link" style={{
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-book-link" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Barlow Condensed',sans-serif",
             fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 19, color: WHITE,
             background: '#E4141A', borderRadius: 999, padding: '17px 34px', boxShadow: '0 0 30px rgba(228,20,26,.45)',
@@ -550,16 +526,16 @@ function Footer() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.20em', fontSize: 13, color: BONE_DIM }}>Legal</span>
-          <a href="#top" style={{ fontSize: 16, color: BONE_DIM }}>Privacy Policy</a>
-          <a href="#top" style={{ fontSize: 16, color: BONE_DIM }}>Terms and Conditions</a>
+          <a href="#/privacy" className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Privacy Policy</a>
+          <a href="#/terms" className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Terms and Conditions</a>
           <a href="mailto:info@alliancestreet.ae" style={{ fontSize: 16, color: BONE_DIM }}>Contact</a>
-          <a href="https://www.alliancestreet.ae" target="_blank" rel="noopener" style={{ fontSize: 16, color: BONE_DIM }}>Website</a>
+          <a href="https://www.alliancestreet.ae" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>Website</a>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.20em', fontSize: 13, color: BONE_DIM }}>Follow</span>
-          <a href="https://www.linkedin.com/company/79507309/admin/dashboard/" target="_blank" rel="noopener" style={{ fontSize: 16, color: BONE_DIM }}>LinkedIn</a>
-          <a href="https://www.instagram.com/alliancestreetconsultancy/" target="_blank" rel="noopener" style={{ fontSize: 16, color: BONE_DIM }}>Instagram</a>
-          <a href="https://www.youtube.com/@Alliancestreetconsultancy22" target="_blank" rel="noopener" style={{ fontSize: 16, color: BONE_DIM }}>YouTube</a>
+          <a href="https://www.linkedin.com/company/79507309/" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>LinkedIn</a>
+          <a href="https://www.instagram.com/alliancestreetconsultancy/" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>Instagram</a>
+          <a href="https://www.youtube.com/@Alliancestreetconsultancy22" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>YouTube</a>
         </div>
       </div>
       <div style={{ maxWidth: 1360, margin: '44px auto 0', paddingTop: 24, borderTop: `1px solid ${LINE}`, display: 'flex', flexWrap: 'wrap', gap: '16px 32px', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -570,26 +546,69 @@ function Footer() {
   );
 }
 
+/**
+ * Minimal hash routing. Routes use a `#/` prefix specifically so they can't
+ * collide with the in-page anchor links (`#top`, `#form`, `#faq`), and because
+ * hash routes need no server rewrite — which matters on GitHub Pages, where a
+ * path-based route would 404 on refresh.
+ */
+function readRoute() {
+  const h = window.location.hash;
+  if (h.startsWith('#/privacy')) return 'privacy';
+  if (h.startsWith('#/terms')) return 'terms';
+  return 'home';
+}
+
+function useHashRoute() {
+  const [route, setRoute] = useState(readRoute);
+  useEffect(() => {
+    const onChange = () => setRoute(readRoute());
+    window.addEventListener('hashchange', onChange);
+    return () => window.removeEventListener('hashchange', onChange);
+  }, []);
+  return route;
+}
+
 export default function App() {
   const rootRef = useRef(null);
+  const route = useHashRoute();
+  const isHome = route === 'home';
+
+  // Land at the top when moving between the landing page and a legal page,
+  // otherwise you arrive mid-document at the old scroll offset.
+  useEffect(() => {
+    if (!isHome) window.scrollTo(0, 0);
+  }, [route, isHome]);
 
   useGSAP(() => {
+    // The landing choreography targets elements that only exist on the home
+    // view. Re-runs on route change so returning home re-arms the triggers.
+    if (!isHome) {
+      releaseAntiFlash();
+      return undefined;
+    }
     // returns a cleanup that kills ScrollTriggers and reverts SplitText
     return runScrollAnimations();
-  }, { scope: rootRef });
+  }, { scope: rootRef, dependencies: [route] });
 
   return (
     <div className="asc-page grain" ref={rootRef}>
-      <div className="asc-progress" aria-hidden="true" />
+      {isHome && <div className="asc-progress" aria-hidden="true" />}
       <Header />
       <main>
-        <Hero />
-        <Why />
-        <Cover />
-        <Host />
-        <Credibility />
-        <Faq />
-        <Book />
+        {isHome ? (
+          <>
+            <Hero />
+            <Why />
+            <Cover />
+            <Host />
+            <Credibility />
+            <Faq />
+            <Book />
+          </>
+        ) : (
+          <LegalPage kind={route} />
+        )}
       </main>
       <Footer />
     </div>
