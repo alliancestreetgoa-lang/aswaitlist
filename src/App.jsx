@@ -10,7 +10,7 @@ import './App.css';
 import { runScrollAnimations, releaseAntiFlash } from './scrollAnimations';
 import { LegalPage } from './LegalPages';
 import {
-  BOOKING_URL, asset, BG, BONE, BONE_DIM, LINE, WHITE, CARD_INK, CARD_MUTED,
+  BOOKING_URL, SITE_URL, asset, BG, BONE, BONE_DIM, LINE, WHITE, CARD_INK, CARD_MUTED,
   CARD_FAINT, CARD_LABEL, CARD_BORDER, INPUT_BORDER, GLASS_FIELD,
   GLASS_FIELD_BORDER, GLASS_DIVIDER, GLASS_DIM, GLASS_PANEL, LIGHT_BG,
 } from './tokens';
@@ -398,7 +398,7 @@ function Host() {
           <span style={{ fontSize: 19, color: CARD_MUTED }}>Founder, Alliance Street Group</span>
           <div style={{ width: 64, height: 3, background: '#E4141A', margin: '6px 0' }} />
           <p style={{ margin: 0, maxWidth: 640, fontSize: 18, lineHeight: 1.65, color: CARD_MUTED, textWrap: 'pretty' }}>Stallone works with entrepreneurs, internationally active businesses, and investors seeking practical guidance on UAE company formation, banking, international expansion, and compliant cross-border business structures.</p>
-          <a href="#top" className="asc-cta-pill-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: CARD_INK, background: WHITE, border: `1px solid ${INPUT_BORDER}`, borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
+          <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-cta-pill-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: CARD_INK, background: WHITE, border: `1px solid ${INPUT_BORDER}`, borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
         </div>
       </div>
     </section>
@@ -529,7 +529,7 @@ function Footer() {
           <a href="#/privacy" className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Privacy Policy</a>
           <a href="#/terms" className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Terms and Conditions</a>
           <a href="mailto:info@alliancestreet.ae" style={{ fontSize: 16, color: BONE_DIM }}>Contact</a>
-          <a href="https://www.alliancestreet.ae" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>Website</a>
+          <a href={SITE_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>Website</a>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.20em', fontSize: 13, color: BONE_DIM }}>Follow</span>

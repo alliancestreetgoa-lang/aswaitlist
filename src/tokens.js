@@ -6,6 +6,10 @@
 export const BOOKING_URL =
   'https://scheduler.zoom.us/d/8stansn-/free-zero-tax-business--discovery-call';
 
+// Main Alliance Street site — the footer "Website" link and the host
+// section's "Learn More" button.
+export const SITE_URL = 'https://www.alliancestreet.ae/';
+
 // Vite only rewrites asset paths it can see (CSS url(), imports). Plain
 // strings in JSX and inline styles need the base prefix applied by hand,
 // or they 404 when the site is served from a subpath (GitHub Pages).
