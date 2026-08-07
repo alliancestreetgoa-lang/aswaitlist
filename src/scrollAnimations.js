@@ -30,7 +30,8 @@ function applyReducedMotionState() {
     '.reveal', '.reveal-group > *', '.split-head',
     '.hero-badge', '.hero-title', '.hero-rule', '.hero-copy', '.hero-checks',
     '.hero-stat', '.hero-form', '.cover-item', '.host-portrait', '.host-copy > *',
-    '.js-why-cards > *', '.js-testimonials > *', '.js-credstats > *', '.js-faq > *',
+    '.js-why-cards > *', '.js-testimonials > *', '.js-faq > *',
+    '.strategy-copy > *', '.strategy-media', '.asc-strategy-stats > *',
     '.book-icon', '.book-cta',
   ].flatMap(q);
   if (all.length) gsap.set(all, { opacity: 1, clearProps: 'transform,clipPath' });
@@ -185,6 +186,65 @@ function coverScene() {
 }
 
 /* ------------------------------------------------------------------ *
+ * Strategy — copy arrives from the left, the photo unmasks from the
+ * right, and the three figures count up once the row is in view.
+ * ------------------------------------------------------------------ */
+function strategyScene() {
+  const copy = document.querySelector('.strategy-copy');
+  if (copy) {
+    gsap.from(copy.children, {
+      opacity: 0,
+      x: -40,
+      duration: 0.9,
+      ease: EASE,
+      stagger: 0.09,
+      scrollTrigger: { trigger: copy, start: 'top 85%', once: true },
+    });
+  }
+
+  const media = document.querySelector('.strategy-media');
+  if (media) {
+    gsap.from(media, {
+      clipPath: 'inset(0% 0% 0% 100%)',
+      duration: 1.3,
+      ease: EASE,
+      scrollTrigger: { trigger: media, start: 'top 85%', once: true },
+    });
+    const img = media.querySelector('img');
+    if (img) {
+      gsap.fromTo(img, { scale: 1.22 }, {
+        scale: 1,
+        duration: 1.6,
+        ease: EASE,
+        clearProps: 'transform',
+        scrollTrigger: { trigger: media, start: 'top 85%', once: true },
+      });
+    }
+  }
+
+  const row = document.querySelector('.asc-strategy-stats');
+  if (row) {
+    gsap.from(row.children, {
+      opacity: 0, y: 34, duration: 0.8, ease: EASE, stagger: 0.12,
+      scrollTrigger: { trigger: row, start: 'top 88%', once: true },
+    });
+  }
+
+  // Figures count up as the row scrolls in.
+  q('.js-statcount').forEach((el) => {
+    const target = parseFloat(el.dataset.count);
+    const counter = { val: 0 };
+    gsap.to(counter, {
+      val: target,
+      duration: 1.7,
+      ease: EASE_SOFT,
+      scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+      onUpdate: () => { el.textContent = Math.round(counter.val); },
+    });
+  });
+}
+
+/* ------------------------------------------------------------------ *
  * Host — portrait unmasks from the bottom while the photo settles;
  * the copy column arrives from the side.
  * ------------------------------------------------------------------ */
@@ -228,19 +288,7 @@ function hostScene() {
  * Credibility — quote cards rise and settle out of a slight scale.
  * ------------------------------------------------------------------ */
 function credibilityScene() {
-  q('.js-statcount').forEach((el) => {
-    const target = parseFloat(el.dataset.count);
-    const counter = { val: 0 };
-    gsap.to(counter, {
-      val: target,
-      duration: 1.6,
-      ease: EASE_SOFT,
-      scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-      onUpdate: () => { el.textContent = Math.round(counter.val); },
-    });
-  });
-
-  [['.js-testimonials', 0.13], ['.js-credstats', 0.1]].forEach(([sel, stagger]) => {
+  [['.js-testimonials', 0.13]].forEach(([sel, stagger]) => {
     const grid = document.querySelector(sel);
     if (!grid) return;
     gsap.from(grid.children, {
@@ -394,6 +442,7 @@ function buildAll() {
     heroScene();
     whyScene();
     coverScene();
+    strategyScene();
     hostScene();
     credibilityScene();
     faqScene();

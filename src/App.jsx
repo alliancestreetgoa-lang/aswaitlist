@@ -11,7 +11,7 @@ import { runScrollAnimations, releaseAntiFlash } from './scrollAnimations';
 import { LegalPage } from './LegalPages';
 import {
   BOOKING_URL, SITE_URL, asset, BG, BONE, BONE_DIM, LINE, WHITE, CARD_INK, CARD_MUTED,
-  CARD_FAINT, CARD_LABEL, CARD_BORDER, INPUT_BORDER, GLASS_FIELD,
+  CARD_FAINT, CARD_LABEL, CARD_BORDER, GLASS_FIELD,
   GLASS_FIELD_BORDER, GLASS_DIVIDER, GLASS_DIM, GLASS_PANEL, LIGHT_BG,
 } from './tokens';
 
@@ -416,20 +416,75 @@ function Cover() {
   );
 }
 
+function Strategy() {
+  const points = ['Strategic Planning', 'Expert Legal Counsel', 'Streamlined Process'];
+  const stats = [
+    [200, 'Business Structures Built'],
+    [20, 'Tax Lawyers & Strategists'],
+    [17, 'Years Experience'],
+  ];
+  return (
+    <section id="strategy" className="asc-pad asc-sec" style={{ padding: '88px 48px 96px', background: LIGHT_BG }}>
+      <div style={{ maxWidth: 1360, margin: '0 auto' }}>
+        <div className="asc-strategy-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.05fr)', gap: 64, alignItems: 'center' }}>
+          <div className="strategy-copy" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
+            <h2 className="split-head" style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.4vw,52px)', lineHeight: 1, color: CARD_INK }}>
+              Strategy &amp; <span style={{ color: '#E4141A' }}>Business Setup</span>
+            </h2>
+            <div style={{ width: 64, height: 3, background: '#E4141A' }} />
+            <p style={{ margin: 0, maxWidth: '58ch', fontSize: 17, lineHeight: 1.65, color: CARD_MUTED, textWrap: 'pretty' }}>
+              Setting up a new business in Dubai can be complex, especially for international entrepreneurs. We manage the entire process by handling all the necessary paperwork, ensuring you get approved for your business licence — all from the comfort of your home.
+            </p>
+            <ul style={{ listStyle: 'none', margin: '4px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {points.map((point) => (
+                <li key={point} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Check size={20} strokeWidth={3} style={{ color: '#E4141A', flex: 'none' }} />
+                  <span style={{ fontFamily: "'Barlow',sans-serif", fontWeight: 600, fontSize: 17, color: CARD_INK }}>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="strategy-media" style={{ width: '100%', aspectRatio: '16/10', borderRadius: 22, overflow: 'hidden', boxShadow: '0 22px 50px rgba(228,20,26,.20)' }}>
+            <img
+              src={asset('images/strategy-setup.jpg')}
+              alt="Alliance Street advisers reviewing a client's Dubai company setup"
+              loading="lazy"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          </div>
+        </div>
+
+        <div className="asc-strategy-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 32, marginTop: 76, paddingTop: 52, borderTop: `1px solid ${CARD_BORDER}` }}>
+          {stats.map(([value, label]) => (
+            <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={{ display: 'flex', alignItems: 'flex-start', lineHeight: 1 }}>
+                <span className="js-statcount" data-count={value} style={{ fontFamily: "'Anton',sans-serif", fontSize: 'clamp(48px,5vw,76px)', lineHeight: 1, color: CARD_INK }}>0</span>
+                <span aria-hidden="true" style={{ fontFamily: "'Anton',sans-serif", fontSize: 'clamp(24px,2.5vw,38px)', lineHeight: 1.15, color: '#E4141A', marginLeft: 3 }}>+</span>
+              </span>
+              <span style={{ fontSize: 17, lineHeight: 1.5, color: CARD_MUTED }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Host() {
   return (
-    <section id="host" className="asc-pad asc-sec" style={{ padding: '96px 48px', background: LIGHT_BG }}>
+    <section id="host" className="asc-pad asc-sec" style={{ padding: '96px 48px', background: BG }}>
       <div className="asc-host-grid" style={{ maxWidth: 1360, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0,.8fr) minmax(0,1.2fr)', gap: 72, alignItems: 'center' }}>
         <div className="host-portrait" style={{ width: '100%', aspectRatio: '4/5', borderRadius: 22, overflow: 'hidden', boxShadow: '0 18px 44px rgba(228,20,26,.28)' }}>
           <img src={asset("images/host-portrait.webp")} alt="Stallone Shaikh, Founder of Alliance Street Group" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         </div>
         <div className="host-copy" style={{ display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'flex-start' }}>
           <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.18em', fontSize: 14, color: '#F43A3F' }}>Your host</span>
-          <h2 style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.4vw,52px)', lineHeight: 1, color: CARD_INK }}>Hosted by Stallone Shaikh</h2>
-          <span style={{ fontSize: 19, color: CARD_MUTED }}>Founder, Alliance Street Group</span>
+          <h2 style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.4vw,52px)', lineHeight: 1, color: BONE }}>Hosted by Stallone Shaikh</h2>
+          <span style={{ fontSize: 19, color: BONE_DIM }}>Founder, Alliance Street Group</span>
           <div style={{ width: 64, height: 3, background: '#E4141A', margin: '6px 0' }} />
-          <p style={{ margin: 0, maxWidth: 640, fontSize: 18, lineHeight: 1.65, color: CARD_MUTED, textWrap: 'pretty' }}>Stallone works with entrepreneurs, internationally active businesses, and investors seeking practical guidance on UAE company formation, banking, international expansion, and compliant cross-border business structures.</p>
-          <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-cta-pill-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: CARD_INK, background: WHITE, border: `1px solid ${INPUT_BORDER}`, borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
+          <p style={{ margin: 0, maxWidth: 640, fontSize: 18, lineHeight: 1.65, color: BONE_DIM, textWrap: 'pretty' }}>Stallone works with entrepreneurs, internationally active businesses, and investors seeking practical guidance on UAE company formation, banking, international expansion, and compliant cross-border business structures.</p>
+          <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-cta-pill-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, background: 'rgba(255,255,255,0.055)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
         </div>
       </div>
     </section>
@@ -437,11 +492,6 @@ function Host() {
 }
 
 function Credibility() {
-  const stats = [
-    [200, 'Business Structures Built'],
-    [20, 'Tax Lawyers & Strategists'],
-    [17, 'Years Experience'],
-  ];
   return (
     <section id="credibility" className="asc-pad asc-sec" style={{ padding: '88px 48px 96px', background: BG }}>
       <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 40 }}>
@@ -463,21 +513,6 @@ function Credibility() {
                   <span style={{ fontSize: 15, color: CARD_MUTED }}>{t.company}</span>
                 </span>
               </div>
-            </div>
-          ))}
-        </div>
-        <div className="asc-why-grid js-credstats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 28 }}>
-          {stats.map(([value, label]) => (
-            <div key={label} className="asc-glass-card" style={{ display: 'flex', flexDirection: 'column', gap: 10, borderRadius: 18, padding: '32px 28px' }}>
-              <span style={{ display: 'flex', alignItems: 'flex-start', lineHeight: 1 }}>
-                <span
-                  className="js-statcount"
-                  data-count={value}
-                  style={{ fontFamily: "'Anton',sans-serif", fontSize: 'clamp(44px,4.4vw,60px)', lineHeight: 1, color: CARD_INK }}
-                >0</span>
-                <span aria-hidden="true" style={{ fontFamily: "'Anton',sans-serif", fontSize: 'clamp(22px,2.2vw,30px)', lineHeight: 1.2, color: '#E4141A', marginLeft: 2 }}>+</span>
-              </span>
-              <span style={{ fontSize: 16, lineHeight: 1.5, color: CARD_MUTED }}>{label}</span>
             </div>
           ))}
         </div>
@@ -638,6 +673,7 @@ export default function App() {
             <Hero />
             <Why />
             <Cover />
+            <Strategy />
             <Host />
             <Credibility />
             <Faq />

@@ -63,7 +63,8 @@ a:hover { color: #C40D12; }
 .asc-hero-bg,
 .asc-hero-grid,
 .cover-glow,
-.book-glow { will-change: transform; }
+.book-glow,
+.strategy-media { will-change: transform; }
 
 @media (prefers-reduced-motion: reduce) {
   .asc-progress { display: none; }
@@ -218,6 +219,7 @@ input::placeholder { color: #9A9AA2; }
   .asc-hero-grid { grid-template-columns: 1fr !important; gap: 44px !important; }
   .asc-form-card { position: static !important; }
   .asc-host-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+  .asc-strategy-grid { grid-template-columns: 1fr !important; gap: 44px !important; }
   .asc-footer-grid { grid-template-columns: 1fr 1fr !important; gap: 36px !important; }
   .asc-why-grid { grid-template-columns: 1fr 1fr !important; }
 }
@@ -233,4 +235,5 @@ input::placeholder { color: #9A9AA2; }
   .asc-cover-grid { grid-template-columns: 1fr !important; }
   .asc-footer-grid { grid-template-columns: 1fr !important; }
   .asc-host-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+  .asc-strategy-stats { grid-template-columns: 1fr !important; gap: 28px !important; margin-top: 48px !important; padding-top: 36px !important; }
 }
