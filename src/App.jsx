@@ -374,6 +374,7 @@ function Why() {
           {items.map(([Icon, title, body]) => (
             <div key={title} className="asc-card asc-glass asc-glass--on-light asc-glass--bloom" style={{ display: 'flex', flexDirection: 'column', gap: 16, borderRadius: 18, padding: '28px 28px 32px' }}>
               <span className="asc-icon-badge" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: 999, background: 'rgba(228,20,26,0.09)' }}>
+                <span className="asc-icon-ring" aria-hidden="true" />
                 <Icon size={22} style={{ color: '#E4141A' }} />
               </span>
               <h3 style={{ margin: 0, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', fontSize: 24, lineHeight: 1.1, color: CARD_INK }}>{title}</h3>
@@ -404,6 +405,7 @@ function Cover() {
           {items.map(([Icon, text]) => (
             <div key={text} className="cover-item asc-card asc-glass asc-glass--on-dark asc-glass--bloom" style={{ display: 'flex', alignItems: 'center', gap: 20, borderRadius: 18, padding: '24px 26px' }}>
               <span className="asc-icon-badge" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: 999, background: 'rgba(228,20,26,0.09)', flex: 'none' }}>
+                <span className="asc-icon-ring" aria-hidden="true" />
                 <Icon size={22} style={{ color: '#E4141A' }} />
               </span>
               <span style={{ fontSize: 19, lineHeight: 1.4, color: CARD_INK }}>{text}</span>

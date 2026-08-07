@@ -228,6 +228,33 @@ input::placeholder { color: #9A9AA2; }
   z-index: 0;
 }
 
+/* --- Icon badges -----------------------------------------------------------
+   The red disc behind each section icon. GSAP draws the glyph on with
+   DrawSVG and pings the ring outward; see iconBadgeScene().
+   The ring is invisible by default on purpose — if GSAP never runs, it
+   stays hidden rather than sitting stranded on the disc. */
+.asc-icon-badge {
+  position: relative;
+  will-change: transform;
+}
+
+/* Sits above the ring, and unclipped so round stroke caps aren't shaved
+   off mid-draw. */
+.asc-icon-badge > svg {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.asc-icon-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(228, 20, 26, 0.55);
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* --- On the dark canvas: bright glass so the dark card text still reads --- */
 .asc-glass--on-dark {
   background: linear-gradient(160deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.87) 100%);

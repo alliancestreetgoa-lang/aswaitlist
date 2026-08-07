@@ -1,8 +1,9 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin);
 
 // Exponential ease-out everywhere — no bounce, no elastic.
 const EASE = 'power4.out';
@@ -183,6 +184,78 @@ function coverScene() {
       scrollTrigger: { trigger: '#cover', start: 'top bottom', end: 'bottom top', scrub: 0.6 },
     });
   }
+}
+
+/**
+ * The red icon discs in "Why join" and "What the webinar may cover".
+ *
+ * Three layers, sequenced so the icon reads as being drawn rather than
+ * faded in: the disc scales up, its stroked lucide glyph draws itself on
+ * with DrawSVG, and a ring pings outward from the edge. The card entrance
+ * leads, so the badge is offset behind it rather than triggered earlier.
+ */
+function iconBadgeScene() {
+  const badges = q('.asc-icon-badge');
+  if (!badges.length) return;
+
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  badges.forEach((badge) => {
+    const ring = badge.querySelector('.asc-icon-ring');
+    const svg = badge.querySelector('svg');
+    // lucide draws with fill:none + stroke:currentColor, so every shape it
+    // emits is a legitimate DrawSVG target.
+    const strokes = svg
+      ? q(svg.querySelectorAll('path, line, polyline, polygon, circle, rect, ellipse'))
+      : [];
+
+    const pingRing = () => {
+      if (!ring) return;
+      gsap.fromTo(ring,
+        { scale: 0.6, opacity: 0.85 },
+        { scale: 1.75, opacity: 0, duration: 0.85, ease: 'power2.out', overwrite: true });
+    };
+
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: badge, start: 'top 88%', once: true },
+    });
+
+    // Offset lets the card's own entrance land first.
+    tl.from(badge, { scale: 0.4, opacity: 0, duration: 0.7, ease: EASE }, 0.2);
+
+    if (strokes.length) {
+      tl.from(strokes, {
+        drawSVG: '0%',
+        duration: 0.7,
+        ease: EASE_SOFT,
+        stagger: 0.07,
+      }, 0.38);
+    }
+
+    tl.add(pingRing, 0.4);
+
+    if (!canHover) return;
+
+    // Driven from the card, not the 48px disc: the whole card already tilts
+    // on hover, so the badge should answer the same gesture.
+    const card = badge.closest('.asc-card');
+    if (!card) return;
+
+    const onEnter = () => {
+      gsap.to(badge, { scale: 1.12, duration: 0.45, ease: EASE_SOFT, overwrite: 'auto' });
+      pingRing();
+    };
+    const onLeave = () => {
+      gsap.to(badge, { scale: 1, duration: 0.5, ease: EASE_SOFT, overwrite: 'auto' });
+    };
+
+    card.addEventListener('pointerenter', onEnter);
+    card.addEventListener('pointerleave', onLeave);
+    cardTeardowns.push(() => {
+      card.removeEventListener('pointerenter', onEnter);
+      card.removeEventListener('pointerleave', onLeave);
+    });
+  });
 }
 
 /* ------------------------------------------------------------------ *
@@ -442,6 +515,7 @@ function buildAll() {
     heroScene();
     whyScene();
     coverScene();
+    iconBadgeScene();
     strategyScene();
     hostScene();
     credibilityScene();
