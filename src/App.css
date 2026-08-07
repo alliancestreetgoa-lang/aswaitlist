@@ -101,23 +101,44 @@ input::placeholder { color: #9A9AA2; }
 
 .asc-faq-row:first-child { border-top: 1px solid #E7E7EC; }
 
-/* Credibility section only: liquid-glass 3D card with a red corner glow —
-   a deliberate accent treatment, distinct from the flat white "paperwork"
-   cards used everywhere else in the system. */
-.asc-glass-card {
+/* ==================================================================
+   LIQUID GLASS
+   One material, three groundings. A card has to stay readable against
+   whatever sits behind it, so the alpha changes with the background
+   while the glass affordances (blur, sheen, edge lip) stay constant.
+   ================================================================== */
+
+.asc-glass {
   position: relative;
   isolation: isolate;
-  background: #FFFFFF;
-  border: 1px solid #E7E7EC;
   overflow: hidden;
-  /* transform is driven by GSAP (pointer tilt + lift) — CSS only does shadow. */
-  transition: box-shadow 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
-  box-shadow:
-    0 24px 48px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(228, 20, 26, 0.10);
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  /* transform belongs to GSAP (pointer tilt + lift); CSS only does surface. */
+  transition: box-shadow 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+              border-color 0.35s ease;
 }
 
-.asc-glass-card::before {
+/* Specular sheen — the highlight that reads as a curved glass surface. */
+.asc-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.12) 26%,
+    rgba(255, 255, 255, 0) 48%
+  );
+}
+
+/* Content rides above the sheen and any glow. */
+.asc-glass > * { position: relative; z-index: 1; }
+
+/* Red corner bloom, refracted through the blur. */
+.asc-glass--bloom::before {
   content: "";
   position: absolute;
   top: -35%;
@@ -130,67 +151,78 @@ input::placeholder { color: #9A9AA2; }
   z-index: 0;
 }
 
-.asc-glass-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-.asc-glass-card:hover {
+/* --- On the dark canvas: bright glass so the dark card text still reads --- */
+.asc-glass--on-dark {
+  background: linear-gradient(160deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.87) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   box-shadow:
-    0 34px 64px rgba(0, 0, 0, 0.48),
-    0 0 44px rgba(228, 20, 26, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 24px 48px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(228, 20, 26, 0.10);
+}
+.asc-glass--on-dark:hover {
+  border-color: rgba(228, 20, 26, 0.30);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 34px 64px rgba(0, 0, 0, 0.52),
+    0 0 44px rgba(228, 20, 26, 0.38);
 }
 
-/* Every card: GSAP handles the lift/tilt, CSS handles the shadow bloom and
-   the icon's little kick. Cards stay fully usable with no pointer at all. */
-.asc-card {
-  transition: box-shadow 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
-              border-color 0.35s ease;
+/* --- On a white section: frosted panel, edge does the separating --- */
+.asc-glass--on-light {
+  background: linear-gradient(160deg, rgba(255,255,255,0.86) 0%, rgba(246,246,248,0.62) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 0 0 1px rgba(17, 17, 19, 0.04),
+    0 18px 40px rgba(228, 20, 26, 0.14),
+    0 2px 8px rgba(17, 17, 19, 0.05);
 }
-.asc-card:hover {
-  border-color: rgba(228, 20, 26, 0.35) !important;
-  box-shadow: 0 26px 52px rgba(228, 20, 26, 0.26) !important;
-}
-
-.asc-icon-badge {
-  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
-              background-color 0.35s ease;
-}
-.asc-card:hover .asc-icon-badge,
-.asc-glass-card:hover .asc-icon-badge {
-  transform: scale(1.12) rotate(-6deg);
-  background-color: rgba(228, 20, 26, 0.16);
+.asc-glass--on-light:hover {
+  border-color: rgba(228, 20, 26, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 0 0 1px rgba(17, 17, 19, 0.05),
+    0 28px 56px rgba(228, 20, 26, 0.24),
+    0 2px 8px rgba(17, 17, 19, 0.06);
 }
 
-/* Host portrait: the photo eases in behind its fixed frame. */
-.host-portrait { overflow: hidden; }
-.host-portrait img { transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1); }
-.host-portrait:hover img { transform: scale(1.05); }
-
-@media (prefers-reduced-motion: reduce) {
-  .asc-card,
-  .asc-glass-card,
-  .asc-icon-badge,
-  .host-portrait img { transition: none; }
-  .asc-card:hover .asc-icon-badge,
-  .asc-glass-card:hover .asc-icon-badge { transform: none; }
-  .host-portrait:hover img { transform: none; }
-}
-
-/* Hero signup form: DARK liquid-glass shell. Kept genuinely see-through
-   (low alpha, light blur) so the skyline photo reads behind it — which is
-   why the form's content is light-on-dark rather than the site's usual
-   dark-on-white paperwork treatment. */
-.asc-form-card {
+/* --- Over the hero photograph: dark glass, light content --- */
+.asc-glass--on-photo {
   background: rgba(12, 12, 14, 0.42);
-  backdrop-filter: blur(12px) saturate(125%);
-  -webkit-backdrop-filter: blur(12px) saturate(125%);
   border: 1px solid rgba(255, 255, 255, 0.20);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     0 24px 60px rgba(0, 0, 0, 0.55),
     0 0 40px rgba(228, 20, 26, 0.16);
 }
+.asc-glass--on-photo::after {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.04) 30%,
+    rgba(255, 255, 255, 0) 55%
+  );
+}
+.asc-glass--on-photo:hover {
+  border-color: rgba(228, 20, 26, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 30px 70px rgba(0, 0, 0, 0.6),
+    0 0 46px rgba(228, 20, 26, 0.34);
+}
+
+/* Browsers without backdrop-filter get an opaque fallback rather than a
+   washed-out card with unreadable text. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .asc-glass--on-dark,
+  .asc-glass--on-light { background: #FFFFFF; }
+  .asc-glass--on-photo { background: rgba(12, 12, 14, 0.92); }
+}
+
+/* The hero signup form uses the same on-photo glass; it just blurs a touch
+   less so the skyline stays legible behind it. */
+.asc-form-card { backdrop-filter: blur(12px) saturate(130%); -webkit-backdrop-filter: blur(12px) saturate(130%); }
 
 /* Fields inside the dark glass: translucent, light text, light placeholder. */
 .asc-form-card input::placeholder { color: rgba(237, 234, 227, 0.58); }

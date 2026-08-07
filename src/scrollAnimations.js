@@ -358,7 +358,7 @@ function cardInteractions() {
 
   // The form is excluded on purpose: tilting a field you're typing into is
   // hostile, and it's the page's conversion surface.
-  const cards = q('.asc-card, .asc-glass-card').filter((c) => !c.closest('.asc-form-card'));
+  const cards = q('.asc-card').filter((c) => !c.closest('.asc-form-card'));
   const rectResets = [];
 
   cards.forEach((card) => {

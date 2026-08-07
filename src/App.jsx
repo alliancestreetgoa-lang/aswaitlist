@@ -172,7 +172,7 @@ function WebinarForm() {
   const codeHint = error || 'Didn’t arrive? Codes can take up to a minute.';
 
   return (
-    <div id="form" className="asc-form-card hero-form" style={{
+    <div id="form" className="asc-form-card hero-form asc-glass asc-glass--on-photo" style={{
       position: 'sticky', top: 96,
       borderRadius: 22, padding: '24px 26px 22px',
       color: BONE,
@@ -342,11 +342,11 @@ function Hero() {
             ))}
           </div>
 
-          <div className="asc-stat-card hero-stat asc-card" style={{ marginTop: 4, display: 'inline-flex', flexWrap: 'wrap', gap: 30, alignSelf: 'flex-start', background: WHITE, border: `1px solid ${CARD_BORDER}`, borderRadius: 16, padding: '16px 24px', boxShadow: '0 10px 30px rgba(228,20,26,.14)' }}>
+          <div className="asc-stat-card hero-stat asc-card asc-glass asc-glass--on-photo" style={{ marginTop: 4, display: 'inline-flex', flexWrap: 'wrap', gap: 30, alignSelf: 'flex-start', borderRadius: 16, padding: '16px 24px' }}>
             {[[0, '%', 'Personal income tax'], [100, '%', 'Foreign ownership'], [8, ' HRS', 'London to Dubai']].map(([value, suffix, label]) => (
               <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <span className="stat-number" data-count={value} data-suffix={suffix} style={{ fontFamily: "'Anton',sans-serif", fontSize: 28, lineHeight: 1, color: '#E4141A' }}>0{suffix}</span>
-                <span style={{ fontSize: 12, letterSpacing: '.10em', textTransform: 'uppercase', color: CARD_MUTED }}>{label}</span>
+                <span style={{ fontSize: 12, letterSpacing: '.10em', textTransform: 'uppercase', color: GLASS_DIM }}>{label}</span>
               </div>
             ))}
           </div>
@@ -372,7 +372,7 @@ function Why() {
         </h2>
         <div className="asc-why-grid js-why-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 28 }}>
           {items.map(([Icon, title, body]) => (
-            <div key={title} className="asc-card" style={{ display: 'flex', flexDirection: 'column', gap: 16, background: WHITE, border: `1px solid ${CARD_BORDER}`, borderRadius: 18, padding: '28px 28px 32px', boxShadow: '0 10px 30px rgba(228,20,26,.14)' }}>
+            <div key={title} className="asc-card asc-glass asc-glass--on-light asc-glass--bloom" style={{ display: 'flex', flexDirection: 'column', gap: 16, borderRadius: 18, padding: '28px 28px 32px' }}>
               <span className="asc-icon-badge" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: 999, background: 'rgba(228,20,26,0.09)' }}>
                 <Icon size={22} style={{ color: '#E4141A' }} />
               </span>
@@ -402,7 +402,7 @@ function Cover() {
         </h2>
         <div className="asc-cover-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 24 }}>
           {items.map(([Icon, text]) => (
-            <div key={text} className="cover-item asc-card" style={{ display: 'flex', alignItems: 'center', gap: 20, background: WHITE, border: `1px solid ${CARD_BORDER}`, boxShadow: '0 10px 30px rgba(228,20,26,.14)', borderRadius: 18, padding: '24px 26px' }}>
+            <div key={text} className="cover-item asc-card asc-glass asc-glass--on-dark asc-glass--bloom" style={{ display: 'flex', alignItems: 'center', gap: 20, borderRadius: 18, padding: '24px 26px' }}>
               <span className="asc-icon-badge" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 48, borderRadius: 999, background: 'rgba(228,20,26,0.09)', flex: 'none' }}>
                 <Icon size={22} style={{ color: '#E4141A' }} />
               </span>
@@ -503,7 +503,7 @@ function Credibility() {
         </div>
         <div className="asc-why-grid js-testimonials" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 28, alignItems: 'stretch' }}>
           {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="asc-glass-card" style={{ display: 'flex', flexDirection: 'column', gap: 18, borderRadius: 18, padding: 28 }}>
+            <div key={t.name} className="asc-card asc-glass asc-glass--on-dark asc-glass--bloom" style={{ display: 'flex', flexDirection: 'column', gap: 18, borderRadius: 18, padding: 28 }}>
               <Quote size={26} style={{ color: '#E4141A' }} />
               <p style={{ margin: 0, fontSize: 17, lineHeight: 1.62, color: CARD_LABEL, textWrap: 'pretty' }}>&ldquo;{t.quote}&rdquo;</p>
               <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 14, paddingTop: 6, borderTop: '1px solid #EFEFF3' }}>
