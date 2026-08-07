@@ -116,12 +116,31 @@ function WebinarForm() {
   // United Kingdom is the default dial code — the page targets UK and
   // internationally active owners, and UK is the largest segment.
   const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  // null = follow the country selector. Typing in the dial field sets an
+  // override so visitors outside the 12 listed countries aren't stuck.
+  const [dialOverride, setDialOverride] = useState(null);
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [verifySent, setVerifySent] = useState(false);
   const [error, setError] = useState('');
 
-  const dialCode = (COUNTRIES.find((c) => c.code === country) || COUNTRIES[0]).dial;
+  const countryDial = (COUNTRIES.find((c) => c.code === country) || COUNTRIES[0]).dial;
+  const dialCode = dialOverride ?? countryDial;
+
+  // Picking a country is an explicit action, so it re-syncs the dial code
+  // and clears any manual override.
+  const onCountry = (e) => {
+    setCountry(e.target.value);
+    setDialOverride(null);
+    setError('');
+  };
+
+  // Keep a single leading '+' and digits only, so the value stays dialable.
+  const onDial = (e) => {
+    const digits = e.target.value.replace(/[^\d]/g, '').slice(0, 4);
+    setDialOverride('+' + digits);
+    setError('');
+  };
   const fullPhone = `${dialCode} ${phone || '—'}`;
 
   const onVerify = () => {
@@ -185,7 +204,7 @@ function WebinarForm() {
               style={{ width: '100%', height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
           </label>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, color: BONE }}>Country
-            <select value={country} autoComplete="off" onChange={(e) => { setCountry(e.target.value); setError(''); }}
+            <select value={country} autoComplete="off" onChange={onCountry}
               style={{ width: '100%', height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 12px', fontSize: 16, color: BONE, background: GLASS_FIELD }}>
               {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
             </select>
@@ -193,7 +212,15 @@ function WebinarForm() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, color: BONE }}>
             WhatsApp number
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 38, minWidth: 56, flex: 'none', padding: '0 12px', borderRadius: 10, background: GLASS_FIELD, border: `1px solid ${GLASS_FIELD_BORDER}`, fontWeight: 600, fontSize: 16, color: BONE }}>{dialCode}</span>
+              <input
+                type="tel"
+                inputMode="tel"
+                aria-label="Country dial code"
+                autoComplete="off"
+                value={dialCode}
+                onChange={onDial}
+                style={{ width: 74, flex: 'none', height: 38, padding: '0 10px', borderRadius: 10, background: GLASS_FIELD, border: `1px solid ${GLASS_FIELD_BORDER}`, fontWeight: 600, fontSize: 16, color: BONE, textAlign: 'center' }}
+              />
               <input type="tel" placeholder="7700 900123" aria-label="WhatsApp number" autoComplete="tel-national" value={phone} onChange={(e) => { setPhone(e.target.value); setError(''); }}
                 style={{ flex: '1 1 130px', minWidth: 0, height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
               <button type="button" onClick={onVerify} className="asc-verify-btn" style={{
@@ -202,7 +229,7 @@ function WebinarForm() {
                 textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 16, cursor: 'pointer', whiteSpace: 'nowrap',
               }}>{verifySent ? 'Code sent' : 'Verify WhatsApp Number'}</button>
             </div>
-            <span style={{ fontSize: 13, color: GLASS_DIM }}>Country code is preselected from your country.</span>
+            <span style={{ fontSize: 13, color: GLASS_DIM }}>Preselected from your country — edit it if you need a different code.</span>
           </div>
 
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: GLASS_PANEL, border: `1px solid ${GLASS_DIVIDER}`, borderRadius: 12, padding: '11px 14px' }}>
