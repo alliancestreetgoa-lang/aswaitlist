@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-07T12:57:04Z",
+  "generatedAt": "2026-08-07T13:14:07Z",
   "title": "Design System: Alliance Street \u2014 Priority Access Webinar",
   "extensions": {
     "colorMeta": {
@@ -139,6 +139,14 @@
       "body": {
         "displayName": "Body (Barlow)",
         "purpose": "Paragraphs, FAQ answers, testimonial quotes."
+      },
+      "stat": {
+        "displayName": "Stat (Anton)",
+        "purpose": "Strategy section proof figures; counts up on scroll."
+      },
+      "stat-affix": {
+        "displayName": "Stat affix (Anton, red)",
+        "purpose": "The trailing '+' on a stat figure."
       }
     },
     "shadows": [

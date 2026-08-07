@@ -32,6 +32,16 @@ typography:
     fontSize: "clamp(34px, 3.4vw, 52px)"
     fontWeight: 700
     lineHeight: 1
+  stat:
+    fontFamily: "Anton, 'Barlow Condensed', 'Arial Narrow', sans-serif"
+    fontSize: "clamp(48px, 5vw, 76px)"
+    fontWeight: 400
+    lineHeight: 1
+  stat-affix:
+    fontFamily: "Anton, 'Barlow Condensed', 'Arial Narrow', sans-serif"
+    fontSize: "clamp(24px, 2.5vw, 38px)"
+    fontWeight: 400
+    lineHeight: 1.15
   label:
     fontFamily: "'Barlow Condensed', 'Arial Narrow', sans-serif"
     fontSize: "14px"
@@ -135,6 +145,7 @@ Two coexisting palettes by design: a dark palette for the page canvas and everyt
 - **Display** (400, `clamp(40px, 4.2vw, 68px)`, line-height 0.94, uppercase): hero H1 only. One per page. Sized to keep the entire hero (headline through the form's submit button) within a single viewport — see the one-screen rule in Layout.
 - **Headline** (700, `clamp(34px, 3.4vw, 52px)`, line-height 1, uppercase): every section H2/H3 ("Why join the priority list", "What the webinar may cover"...). Exception: the final CTA heading ("Would You Rather Not Wait?") intentionally scales slightly larger — `clamp(34px, 3.6vw, 56px)` — as the page's last conversion moment; a confirmed one-off, not a new ramp step.
 - **Title** (700, 26px, uppercase): sub-step headings inside the form (e.g. "Confirm your number").
+- **Stat** (400, `clamp(48px, 5vw, 76px)`, line-height 1): the Strategy section's proof figures (200 / 20 / 17). Set in Card Ink, not red — the numeral carries the weight and red is reserved for its **Stat affix** (400, `clamp(24px, 2.5vw, 38px)`), the trailing `+`. A 17px muted label sits beneath. Each figure counts up on scroll. The hero's inline stat card is a different, denser thing: fixed 28px numerals in red inside a single row.
 - **Body** (400–600, 16–19px, line-height 1.5–1.65, max ~65ch): paragraphs, FAQ answers, testimonial quotes.
 - **Label** (700, 12–15px, letter-spacing 0.10em–0.22em, uppercase): eyebrow tags, form field labels, stat captions, footer column headers.
 
