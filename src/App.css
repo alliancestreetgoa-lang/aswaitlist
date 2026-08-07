@@ -114,10 +114,12 @@ input::placeholder { color: #9A9AA2; }
     0 10px 26px rgba(228, 20, 26, 0.34);
 }
 .asc-btn-glass--red:hover {
+  /* Base red is unchanged so contrast holds; hover reads through a
+     stronger sheen, a brighter lip and a bigger outer bloom. */
   background:
-    linear-gradient(158deg, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.12) 34%, rgba(255,255,255,0) 58%),
-    linear-gradient(180deg, #F02F35 0%, #CC0F14 100%);
-  border-color: rgba(255, 255, 255, 0.42);
+    linear-gradient(158deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.16) 36%, rgba(255,255,255,0) 60%),
+    linear-gradient(180deg, #E51A20 0%, #C40D12 100%);
+  border-color: rgba(255, 255, 255, 0.5);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2),
