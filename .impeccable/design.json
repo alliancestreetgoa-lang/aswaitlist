@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-07T03:17:03Z",
+  "title": "Design System: Alliance Street \u2014 Priority Access Webinar",
+  "extensions": {
+    "colorMeta": {
+      "ink-canvas": {
+        "role": "neutral",
+        "displayName": "Ink Canvas",
+        "canonical": "#0A0A0A",
+        "tonalRamp": [
+          "#000000",
+          "#0A0A0A",
+          "#141414",
+          "#1F1F1F",
+          "#3A3A3A",
+          "#6E6E6E",
+          "#A6A6A6",
+          "#EDEAE3"
+        ]
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone",
+        "canonical": "#EDEAE3",
+        "tonalRamp": [
+          "#3A3935",
+          "#5C5A54",
+          "#7E7B73",
+          "#A19D92",
+          "#C4BFB1",
+          "#DCD8CD",
+          "#EDEAE3",
+          "#F7F6F3"
+        ]
+      },
+      "bone-dim": {
+        "role": "neutral",
+        "displayName": "Bone Dim",
+        "canonical": "#9A9A9F",
+        "tonalRamp": [
+          "#2C2C2E",
+          "#464649",
+          "#606064",
+          "#7A7A7E",
+          "#9A9A9F",
+          "#B6B6BA",
+          "#D2D2D4",
+          "#E9E9EA"
+        ]
+      },
+      "red-500": {
+        "role": "primary",
+        "displayName": "Signal Red",
+        "canonical": "#E4141A",
+        "tonalRamp": [
+          "#3A0507",
+          "#5F080B",
+          "#850B0E",
+          "#AA0D11",
+          "#E4141A",
+          "#F43A3F",
+          "#FF6B6F",
+          "#FFB3B5"
+        ]
+      },
+      "red-400": {
+        "role": "primary",
+        "displayName": "Bright Red (hover)",
+        "canonical": "#F43A3F",
+        "tonalRamp": []
+      },
+      "red-600": {
+        "role": "primary",
+        "displayName": "Deep Red (pressed)",
+        "canonical": "#C40D12",
+        "tonalRamp": []
+      },
+      "red-700": {
+        "role": "primary",
+        "displayName": "Ember Red (rare tint)",
+        "canonical": "#9E0A0E",
+        "tonalRamp": []
+      },
+      "card-white": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#111113",
+          "#3A3A42",
+          "#55555C",
+          "#7C7C84",
+          "#B8B8BC",
+          "#E7E7EC",
+          "#F4F4F5",
+          "#FFFFFF"
+        ]
+      },
+      "card-ink": {
+        "role": "neutral",
+        "displayName": "Card Ink",
+        "canonical": "#111113"
+      },
+      "card-body": {
+        "role": "neutral",
+        "displayName": "Card Body",
+        "canonical": "#4A4A52"
+      },
+      "card-muted": {
+        "role": "neutral",
+        "displayName": "Card Muted",
+        "canonical": "#55555C"
+      },
+      "card-faint": {
+        "role": "neutral",
+        "displayName": "Card Faint",
+        "canonical": "#7C7C84"
+      },
+      "hairline-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (dark canvas)",
+        "canonical": "rgba(255,255,255,0.11)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Anton)",
+        "purpose": "Hero H1 only, one per page. Sized to keep the whole hero within one viewport."
+      },
+      "headline": {
+        "displayName": "Headline (Barlow Condensed 700)",
+        "purpose": "Every section heading and CTA label."
+      },
+      "label": {
+        "displayName": "Label (Barlow Condensed 700, tracked)",
+        "purpose": "Eyebrows, form labels, stat captions, footer headers."
+      },
+      "body": {
+        "displayName": "Body (Barlow)",
+        "purpose": "Paragraphs, FAQ answers, testimonial quotes."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-lift",
+        "value": "0 10px 30px rgba(228,20,26,.14)",
+        "purpose": "Resting shadow for opaque white cards."
+      },
+      {
+        "name": "glass-lift",
+        "value": "inset 0 1px 0 rgba(255,255,255,.6), 0 24px 60px rgba(0,0,0,.45), 0 0 40px rgba(228,20,26,.18)",
+        "purpose": "Hero signup form and Credibility glass cards."
+      },
+      {
+        "name": "glass-hover",
+        "value": "0 34px 64px rgba(0,0,0,.48), 0 0 44px rgba(228,20,26,.4)",
+        "purpose": "Credibility glass card hover: 6px lift + 1.5% scale."
+      },
+      {
+        "name": "cta-glow",
+        "value": "0 8px 24px rgba(228,20,26,.28)",
+        "purpose": "Primary red button resting glow."
+      },
+      {
+        "name": "cta-glow-strong",
+        "value": "0 0 30px rgba(228,20,26,.45)",
+        "purpose": "Hero-level 'Book a Consultation' pill CTA."
+      }
+    ],
+    "motion": [
+      {
+        "name": "reveal-ease",
+        "value": "power2.out (GSAP)",
+        "purpose": "Scroll-triggered fade/slide-up reveals on section content."
+      },
+      {
+        "name": "ui-ease",
+        "value": "cubic-bezier(0.22,0.61,0.36,1)",
+        "purpose": "Hover/focus transitions on buttons and inputs."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tablet",
+        "value": "1100px"
+      },
+      {
+        "name": "mobile",
+        "value": "760px"
+      },
+      {
+        "name": "mobile-sm",
+        "value": "560px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid red CTA \u2014 'Continue', 'Confirm & join the list', 'Book a Consultation'.",
+      "html": "<button class=\"ds-btn-primary\">CONTINUE</button>",
+      "css": ".ds-btn-primary { background: #E4141A; color: #FFFFFF; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 20px; height: 52px; padding: 0 24px; border: 0; border-radius: 12px; box-shadow: 0 8px 24px rgba(228,20,26,.28); cursor: pointer; transition: background 0.2s, box-shadow 0.2s; } .ds-btn-primary:hover { background: #F43A3F; box-shadow: 0 10px 30px rgba(228,20,26,.38); }"
+    },
+    {
+      "name": "Secondary Button (dark canvas)",
+      "kind": "button",
+      "refersTo": "button-secondary-dark",
+      "description": "Translucent pill button for the dark canvas \u2014 'I'll Wait for the Webinar', 'Learn More'.",
+      "html": "<a class=\"ds-btn-secondary-dark\" href=\"#\">I'LL WAIT FOR THE WEBINAR</a>",
+      "css": ".ds-btn-secondary-dark { display: inline-flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 19px; color: #EDEAE3; background: rgba(255,255,255,0.055); border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 17px 34px; transition: border-color 0.2s, color 0.2s; } .ds-btn-secondary-dark:hover { border-color: #E4141A; color: #E4141A; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "White 'paperwork' card \u2014 testimonials, stat callouts, cover-topic cards.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-title\">PRIORITY NOTIFICATION</p><p class=\"ds-card-body\">Be among the first to know when the next webinar date is announced.</p></div>",
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid #E7E7EC; border-radius: 18px; padding: 28px; box-shadow: 0 10px 30px rgba(228,20,26,.14); } .ds-card-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: 24px; color: #111113; margin: 0 0 16px; } .ds-card-body { font-family: Barlow, sans-serif; font-size: 17px; line-height: 1.6; color: #4A4A52; margin: 0; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text input inside the white form card, with focus glow.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"First name\" />",
+      "css": ".ds-input { width: 100%; height: 44px; border: 1px solid #D8D8DE; border-radius: 10px; padding: 0 14px; font-family: Barlow, sans-serif; font-size: 16px; color: #111113; background: #FFFFFF; transition: border-color 0.2s, box-shadow 0.2s; } .ds-input::placeholder { color: #9A9AA2; } .ds-input:focus { outline: none; border-color: #E4141A; box-shadow: 0 0 0 3px rgba(228,20,26,.14); }"
+    },
+    {
+      "name": "Sticky Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Dark blurred sticky header \u2014 logo + support link + primary CTA.",
+      "html": "<header class=\"ds-header\"><span class=\"ds-logo\">ALLIANCE STREET</span><a class=\"ds-btn-primary\" style=\"padding:12px 24px;height:auto;font-size:17px;\" href=\"#\">BOOK A CALL</a></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 48px; background: rgba(10,10,10,.92); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.11); } .ds-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 20px; color: #EDEAE3; }"
+    },
+    {
+      "name": "Eyebrow Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Pill badge above the hero headline \u2014 the only decorative chip in the system.",
+      "html": "<span class=\"ds-badge\"><span class=\"ds-badge-dot\"></span>PRIORITY ACCESS WEBINAR SERIES</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(228,20,26,0.5); background: rgba(228,20,26,0.12); border-radius: 999px; padding: 9px 18px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; font-size: 14px; color: #EDEAE3; } .ds-badge-dot { width: 7px; height: 7px; border-radius: 999px; background: #E4141A; display: block; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trading Floor at Night",
+    "overview": "The page reads as a near-black canvas \u2014 the same working-after-hours confidence as alliancestreet.ae \u2014 with a single hot-red accent that carries every point of emphasis: CTAs, active states, stat numerals, the recurring underline rule beneath headlines. Condensed, heavy, all-caps display type (Anton for hero-scale words, Barlow Condensed for section headlines and labels) does the shouting; everything else stays quiet. A fixed, barely-there fractal-noise grain sits over the whole canvas \u2014 enough to keep the black from feeling like a flat digital void, not enough to be decorative.\n\nAgainst that dark field, white 'paperwork' cards surface wherever the page asks the visitor to commit something real: the signup form, testimonials, stat callouts. These cards are deliberately un-dark \u2014 they read as physical documents being handed across a desk, not as generic UI panels \u2014 which is the visual argument for the brand's core promise: this is a serious operator who handles real paperwork, not a startup collecting emails.\n\nThis is explicitly not the generic SaaS look: no cream/beige surfaces, no pastel gradients, no oversized soft-rounded corners, no gradient-fill buttons. Red is scarce by design.",
+    "keyCharacteristics": [
+      "Near-black canvas (#0A0A0A) with a fixed fractal-noise grain overlay (opacity 0.035)",
+      "One accent color (#E4141A red) carrying all emphasis; no secondary/tertiary brand colors",
+      "White 'paperwork' cards as the only light surfaces, always for commitment moments (forms, proof, numbers)",
+      "Two liquid-glass exceptions (hero form, Credibility cards) where the photo/canvas behind should read through",
+      "A Dubai-skyline photograph behind the hero only, under a directional scrim; every other section is bare canvas",
+      "Condensed/display caps typography for anything that needs authority; humanist sans for reading",
+      "Depth comes from red-tinted shadows, never neutral gray"
+    ],
+    "rules": [
+      {
+        "name": "The One Accent Rule",
+        "body": "Red is the only brand color. If a second accent color feels necessary, the fix is spacing or type weight, not a new hue.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Mixed-Surface Rule",
+        "body": "Dark-canvas text colors (Bone / Bone Dim) never appear inside a white card, and light-card text colors never appear directly on the dark canvas. Each surface owns its own ramp.",
+        "section": "colors"
+      },
+      {
+        "name": "The All-Caps Authority Rule",
+        "body": "Anything meant to carry weight (headings, labels, buttons) is uppercase and condensed. Anything meant to be read comfortably (paragraphs) is sentence case and regular-width.",
+        "section": "typography"
+      },
+      {
+        "name": "The Red Shadow Rule",
+        "body": "Opaque surfaces never take a neutral black/gray shadow \u2014 theirs is always red-tinted. Glass surfaces are the one exception: they pair a deep neutral shadow (for volume) with a red glow (for brand), never a neutral shadow alone.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One-Screen Hero Rule",
+        "body": "On desktop (>1100px) the hero fills exactly one viewport: min-height calc(100vh - 80px), vertically centered, with the headline, body copy, checks, stat card and the entire signup form above the fold. Nothing may grow without a compensating trim. Below 1100px the lock releases and the stacked layout scrolls.",
+        "section": "layout"
+      }
+    ],
+    "dos": [
+      "Do keep red as the only accent \u2014 no second brand hue, ever.",
+      "Do tint every shadow with red instead of neutral black/gray.",
+      "Do keep dark-canvas text (Bone/Bone Dim) and light-card text (Card Ink/Body/Muted) strictly separated by surface.",
+      "Do use uppercase condensed type for anything meant to command attention; sentence-case Barlow for anything meant to be read.",
+      "Do collapse every multi-column grid to a single stacked column below 1100px, and disable the form card's position: sticky at that same breakpoint."
+    ],
+    "donts": [
+      "Don't introduce a cream/beige/pastel surface anywhere \u2014 surfaces are the #0A0A0A canvas, an opaque white card, or translucent white glass; never a tinted mid-tone.",
+      "Don't reach for glass decoratively \u2014 it is earned only where the photo or canvas behind the surface should read through (hero form, Credibility cards). Everywhere else stays opaque.",
+      "Don't let anything grow the desktop hero past one viewport without trimming something else (see the One-Screen Hero Rule).",
+      "Don't use a gradient fill on any button or heading \u2014 solid red only.",
+      "Don't add a second accent color, even for 'informational' or 'success' states \u2014 reuse red or a bone/gray tint instead.",
+      "Don't give a card a heavier-than-1px border or a side-stripe accent border.",
+      "Don't round corners past 22px (or 999px for true pills) \u2014 nothing in this system is that soft."
+    ]
+  }
+}

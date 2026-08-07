@@ -1,0 +1,236 @@
+.asc-page {
+  background: #0A0A0A;
+  font-family: 'Barlow', system-ui, sans-serif;
+  color: #111113;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* alliancestreet.ae fine grain texture — fixed, full-viewport fractal noise */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+a { color: #E4141A; text-decoration: none; }
+a:hover { color: #C40D12; }
+
+/* Scroll progress bar — sits above the sticky header. */
+.asc-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #9E0A0E 0%, #E4141A 55%, #F43A3F 100%);
+  transform: scaleX(0);
+  transform-origin: left center;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* SplitText masked-line wrappers: the mask needs a hair of vertical room so
+   descenders and the Anton cap-height aren't clipped mid-reveal. */
+.js-line { padding-bottom: 0.08em; }
+
+/* Anti-flash: the hero animates on load, but the intro is deferred until the
+   webfonts resolve (~150ms) so SplitText measures real line breaks. Without
+   this the hero would paint, then blink out when GSAP applies its from-state.
+   The class is set by an inline script pre-paint and removed the instant the
+   timeline exists, so a JS failure can never leave the hero blank. */
+.js-anim .hero-badge,
+.js-anim .hero-title,
+.js-anim .hero-copy,
+.js-anim .hero-checks > *,
+.js-anim .hero-stat,
+.js-anim .hero-form { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js-anim .hero-badge,
+  .js-anim .hero-title,
+  .js-anim .hero-copy,
+  .js-anim .hero-checks > *,
+  .js-anim .hero-stat,
+  .js-anim .hero-form { opacity: 1; }
+}
+
+/* Layers that animate continuously get a compositor hint. */
+.asc-hero-bg,
+.asc-hero-grid,
+.cover-glow,
+.book-glow { will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .asc-progress { display: none; }
+  .asc-hero-bg,
+  .asc-hero-grid,
+  .cover-glow,
+  .book-glow { will-change: auto; }
+}
+
+input, select, button { font-family: 'Barlow', system-ui, sans-serif; }
+input:focus, select:focus {
+  outline: none;
+  border-color: #E4141A !important;
+  box-shadow: 0 0 0 3px rgba(228, 20, 26, .14);
+}
+input::placeholder { color: #9A9AA2; }
+
+.asc-book-link { transition: background .2s, box-shadow .2s; }
+.asc-book-link:hover { background: #F43A3F !important; box-shadow: 0 0 24px rgba(228, 20, 26, .30); }
+
+.asc-cta-primary { transition: background .2s, box-shadow .2s; }
+.asc-cta-primary:hover { background: #F43A3F !important; box-shadow: 0 10px 30px rgba(228, 20, 26, .38) !important; }
+
+.asc-cta-ghost { transition: border-color .2s; }
+.asc-cta-ghost:hover { border-color: #111113 !important; }
+
+.asc-cta-pill-outline { transition: border-color .2s, color .2s; }
+.asc-cta-pill-outline:hover { border-color: #E4141A !important; color: #E4141A !important; }
+
+.asc-verify-btn { transition: background .2s, border-color .2s; }
+.asc-verify-btn:hover { background: #E4141A !important; border-color: #E4141A !important; }
+
+.asc-footer-link:hover { color: #E4141A !important; }
+
+.asc-faq-row:first-child { border-top: 1px solid #E7E7EC; }
+
+/* Credibility section only: liquid-glass 3D card with a red corner glow —
+   a deliberate accent treatment, distinct from the flat white "paperwork"
+   cards used everywhere else in the system. */
+.asc-glass-card {
+  position: relative;
+  isolation: isolate;
+  background: #FFFFFF;
+  border: 1px solid #E7E7EC;
+  overflow: hidden;
+  /* transform is driven by GSAP (pointer tilt + lift) — CSS only does shadow. */
+  transition: box-shadow 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(228, 20, 26, 0.10);
+}
+
+.asc-glass-card::before {
+  content: "";
+  position: absolute;
+  top: -35%;
+  right: -35%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(228, 20, 26, 0.30) 0%, rgba(228, 20, 26, 0) 70%);
+  filter: blur(28px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.asc-glass-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.asc-glass-card:hover {
+  box-shadow:
+    0 34px 64px rgba(0, 0, 0, 0.48),
+    0 0 44px rgba(228, 20, 26, 0.4);
+}
+
+/* Every card: GSAP handles the lift/tilt, CSS handles the shadow bloom and
+   the icon's little kick. Cards stay fully usable with no pointer at all. */
+.asc-card {
+  transition: box-shadow 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+              border-color 0.35s ease;
+}
+.asc-card:hover {
+  border-color: rgba(228, 20, 26, 0.35) !important;
+  box-shadow: 0 26px 52px rgba(228, 20, 26, 0.26) !important;
+}
+
+.asc-icon-badge {
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+              background-color 0.35s ease;
+}
+.asc-card:hover .asc-icon-badge,
+.asc-glass-card:hover .asc-icon-badge {
+  transform: scale(1.12) rotate(-6deg);
+  background-color: rgba(228, 20, 26, 0.16);
+}
+
+/* Host portrait: the photo eases in behind its fixed frame. */
+.host-portrait { overflow: hidden; }
+.host-portrait img { transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1); }
+.host-portrait:hover img { transform: scale(1.05); }
+
+@media (prefers-reduced-motion: reduce) {
+  .asc-card,
+  .asc-glass-card,
+  .asc-icon-badge,
+  .host-portrait img { transition: none; }
+  .asc-card:hover .asc-icon-badge,
+  .asc-glass-card:hover .asc-icon-badge { transform: none; }
+  .host-portrait:hover img { transform: none; }
+}
+
+/* Hero signup form: DARK liquid-glass shell. Kept genuinely see-through
+   (low alpha, light blur) so the skyline photo reads behind it — which is
+   why the form's content is light-on-dark rather than the site's usual
+   dark-on-white paperwork treatment. */
+.asc-form-card {
+  background: rgba(12, 12, 14, 0.42);
+  backdrop-filter: blur(12px) saturate(125%);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 0 40px rgba(228, 20, 26, 0.16);
+}
+
+/* Fields inside the dark glass: translucent, light text, light placeholder. */
+.asc-form-card input::placeholder { color: rgba(237, 234, 227, 0.58); }
+.asc-form-card input:focus,
+.asc-form-card select:focus {
+  border-color: #F43A3F !important;
+  box-shadow: 0 0 0 3px rgba(228, 20, 26, 0.28);
+}
+/* Native dropdown list renders on the OS surface, not the glass. */
+.asc-form-card select option { background: #141416; color: #EDEAE3; }
+.asc-form-card .asc-cta-ghost:hover { border-color: #F43A3F !important; color: #F43A3F !important; }
+
+@media (max-width: 560px) {
+  .asc-pad { padding-left: 18px !important; padding-right: 18px !important; }
+  .asc-sec { padding-top: 44px !important; padding-bottom: 48px !important; }
+  .asc-support { display: none !important; }
+  .asc-stat-card { width: 100% !important; gap: 18px 24px !important; padding: 18px 20px !important; }
+  .asc-cta-row { width: 100%; }
+  .asc-cta-row > a { flex: 1 1 100%; }
+  .asc-checks { gap: 12px 20px !important; }
+}
+
+@media (max-width: 1100px) {
+  /* Stacked layout can't fit one screen; let the hero grow naturally. */
+  .asc-hero { min-height: 0 !important; display: block !important; padding-top: 56px !important; }
+  .asc-hero-grid { grid-template-columns: 1fr !important; gap: 44px !important; }
+  .asc-form-card { position: static !important; }
+  .asc-host-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+  .asc-footer-grid { grid-template-columns: 1fr 1fr !important; gap: 36px !important; }
+  .asc-why-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
+@media (max-width: 760px) {
+  .asc-pad { padding-left: 24px !important; padding-right: 24px !important; }
+  .asc-sec { padding-top: 56px !important; padding-bottom: 60px !important; }
+  .asc-sec-sm { padding-top: 48px !important; }
+  .asc-form-card { padding: 26px 20px 24px !important; border-radius: 18px !important; }
+  .asc-names { grid-template-columns: 1fr !important; }
+  .asc-verify-btn { flex: 1 1 100% !important; }
+  .asc-why-grid { grid-template-columns: 1fr !important; }
+  .asc-cover-grid { grid-template-columns: 1fr !important; }
+  .asc-footer-grid { grid-template-columns: 1fr !important; }
+  .asc-host-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+}

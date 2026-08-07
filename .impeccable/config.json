@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "56px",
+        "createdAt": "2026-08-06T18:29:30.822Z",
+        "reason": "User confirmed 56px is intentional (Book section final-CTA heading, deliberate emphasis over standard 52px ramp)"
+      }
+    ]
+  }
+}
