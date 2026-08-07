@@ -3,7 +3,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import {
   CheckCircle2, ShieldCheck, Bell, Compass, Users, Building2, Landmark,
-  Quote, Globe, Star, ChevronDown, ChevronUp, Check, ArrowRight, BadgeCheck,
+  Quote, ChevronDown, ChevronUp, Check, ArrowRight, BadgeCheck,
   Mail, Phone,
 } from 'lucide-react';
 import './App.css';
@@ -438,9 +438,9 @@ function Host() {
 
 function Credibility() {
   const stats = [
-    [Globe, 'Countries served', '[Placeholder — list of countries to be confirmed]'],
-    [Building2, 'Industries supported', '[Placeholder — industries to be confirmed]'],
-    [Star, 'Reviews and ratings', '[Placeholder — Google / Trustpilot rating widget]'],
+    [200, 'Business Structures Built'],
+    [20, 'Tax Lawyers & Strategists'],
+    [17, 'Years Experience'],
   ];
   return (
     <section id="credibility" className="asc-pad asc-sec" style={{ padding: '88px 48px 96px', background: BG }}>
@@ -467,11 +467,17 @@ function Credibility() {
           ))}
         </div>
         <div className="asc-why-grid js-credstats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 28 }}>
-          {stats.map(([Icon, title, body]) => (
-            <div key={title} className="asc-glass-card" style={{ display: 'flex', flexDirection: 'column', gap: 14, borderRadius: 18, padding: 28 }}>
-              <Icon className="asc-icon-badge" size={24} style={{ color: '#E4141A' }} />
-              <h3 style={{ margin: 0, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', fontSize: 22, color: CARD_INK }}>{title}</h3>
-              <span style={{ fontSize: 16, lineHeight: 1.55, color: CARD_MUTED }}>{body}</span>
+          {stats.map(([value, label]) => (
+            <div key={label} className="asc-glass-card" style={{ display: 'flex', flexDirection: 'column', gap: 10, borderRadius: 18, padding: '32px 28px' }}>
+              <span style={{ display: 'flex', alignItems: 'flex-start', lineHeight: 1 }}>
+                <span
+                  className="js-statcount"
+                  data-count={value}
+                  style={{ fontFamily: "'Anton',sans-serif", fontSize: 'clamp(44px,4.4vw,60px)', lineHeight: 1, color: CARD_INK }}
+                >0</span>
+                <span aria-hidden="true" style={{ fontFamily: "'Anton',sans-serif", fontSize: 'clamp(22px,2.2vw,30px)', lineHeight: 1.2, color: '#E4141A', marginLeft: 2 }}>+</span>
+              </span>
+              <span style={{ fontSize: 16, lineHeight: 1.5, color: CARD_MUTED }}>{label}</span>
             </div>
           ))}
         </div>

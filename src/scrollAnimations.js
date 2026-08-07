@@ -35,6 +35,7 @@ function applyReducedMotionState() {
   ].flatMap(q);
   if (all.length) gsap.set(all, { opacity: 1, clearProps: 'transform,clipPath' });
   q('.stat-number').forEach(setCounterFinal);
+  q('.js-statcount').forEach((el) => { el.textContent = el.dataset.count; });
 }
 
 /* ------------------------------------------------------------------ *
@@ -227,6 +228,18 @@ function hostScene() {
  * Credibility — quote cards rise and settle out of a slight scale.
  * ------------------------------------------------------------------ */
 function credibilityScene() {
+  q('.js-statcount').forEach((el) => {
+    const target = parseFloat(el.dataset.count);
+    const counter = { val: 0 };
+    gsap.to(counter, {
+      val: target,
+      duration: 1.6,
+      ease: EASE_SOFT,
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+      onUpdate: () => { el.textContent = Math.round(counter.val); },
+    });
+  });
+
   [['.js-testimonials', 0.13], ['.js-credstats', 0.1]].forEach(([sel, stagger]) => {
     const grid = document.querySelector(sel);
     if (!grid) return;

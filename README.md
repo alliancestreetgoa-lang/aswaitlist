@@ -59,7 +59,5 @@ Pre-launch. Known gaps:
 
 - The WhatsApp OTP step is a **UI simulation** — no backend is wired up, so
   any six-digit code is accepted.
-- The "Countries served", "Industries supported", and "Reviews and ratings"
-  cards are explicitly labelled placeholders pending real content.
 - Privacy Policy and Terms are drafted but **await legal review** —
   every `[TO CONFIRM]` marker needs a real answer before launch.
