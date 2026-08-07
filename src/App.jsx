@@ -19,6 +19,8 @@ gsap.registerPlugin(useGSAP);
 
 
 
+const DEFAULT_COUNTRY = 'GB'; // United Kingdom (+44)
+
 const COUNTRIES = [
   { code: 'GB', label: 'United Kingdom (+44)', dial: '+44' },
   { code: 'IE', label: 'Ireland (+353)', dial: '+353' },
@@ -111,7 +113,9 @@ function WebinarForm() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [country, setCountry] = useState('GB');
+  // United Kingdom is the default dial code — the page targets UK and
+  // internationally active owners, and UK is the largest segment.
+  const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [verifySent, setVerifySent] = useState(false);
@@ -168,20 +172,20 @@ function WebinarForm() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
           <div className="asc-names" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 13 }}>
             <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, color: BONE }}>First name
-              <input type="text" value={firstName} onChange={(e) => { setFirstName(e.target.value); setError(''); }}
+              <input type="text" autoComplete="given-name" value={firstName} onChange={(e) => { setFirstName(e.target.value); setError(''); }}
                 style={{ width: '100%', height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
             </label>
             <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, color: BONE }}>Last name
-              <input type="text" value={lastName} onChange={(e) => { setLastName(e.target.value); setError(''); }}
+              <input type="text" autoComplete="family-name" value={lastName} onChange={(e) => { setLastName(e.target.value); setError(''); }}
                 style={{ width: '100%', height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
             </label>
           </div>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, color: BONE }}>Work email address
-            <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(''); }}
+            <input type="email" autoComplete="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(''); }}
               style={{ width: '100%', height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
           </label>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, color: BONE }}>Country
-            <select value={country} onChange={(e) => { setCountry(e.target.value); setError(''); }}
+            <select value={country} autoComplete="off" onChange={(e) => { setCountry(e.target.value); setError(''); }}
               style={{ width: '100%', height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 12px', fontSize: 16, color: BONE, background: GLASS_FIELD }}>
               {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
             </select>
@@ -190,7 +194,7 @@ function WebinarForm() {
             WhatsApp number
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 38, minWidth: 56, flex: 'none', padding: '0 12px', borderRadius: 10, background: GLASS_FIELD, border: `1px solid ${GLASS_FIELD_BORDER}`, fontWeight: 600, fontSize: 16, color: BONE }}>{dialCode}</span>
-              <input type="tel" placeholder="7700 900123" aria-label="WhatsApp number" value={phone} onChange={(e) => { setPhone(e.target.value); setError(''); }}
+              <input type="tel" placeholder="7700 900123" aria-label="WhatsApp number" autoComplete="tel-national" value={phone} onChange={(e) => { setPhone(e.target.value); setError(''); }}
                 style={{ flex: '1 1 130px', minWidth: 0, height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
               <button type="button" onClick={onVerify} className="asc-verify-btn" style={{
                 flex: '0 1 auto', height: 38, padding: '0 16px', border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10,
@@ -224,7 +228,7 @@ function WebinarForm() {
             <h2 style={{ margin: '0 0 6px', fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.02em', fontSize: 26, color: BONE }}>Confirm your number</h2>
             <p style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: GLASS_DIM }}>Enter the six-digit code we sent to <strong style={{ color: BONE }}>{fullPhone}</strong> on WhatsApp.</p>
           </div>
-          <input type="text" inputMode="numeric" maxLength={6} placeholder="000000" aria-label="Six-digit verification code" value={code}
+          <input type="text" inputMode="numeric" maxLength={6} placeholder="000000" aria-label="Six-digit verification code" autoComplete="one-time-code" value={code}
             onChange={(e) => { setCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
             style={{ width: '100%', height: 60, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 12, padding: '0 18px', fontFamily: "'Anton',sans-serif", fontSize: 30, letterSpacing: '.42em', color: BONE, background: GLASS_FIELD }} />
           <span style={{ fontSize: 14, color: GLASS_DIM }}>{codeHint}</span>
