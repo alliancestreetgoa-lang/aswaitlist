@@ -93,10 +93,10 @@ function Header() {
       <a href="#top"><Logo /></a>
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         <span className="asc-support" style={{ fontSize: 15, color: BONE_DIM }}>Already need support?</span>
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-book-link" style={{
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--red" style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase',
-          letterSpacing: '.04em', fontSize: 17, color: WHITE, background: '#E4141A',
+          letterSpacing: '.04em', fontSize: 17, color: WHITE,
           borderRadius: 10, padding: '12px 24px',
         }}>Book a Call</a>
       </div>
@@ -223,9 +223,9 @@ function WebinarForm() {
               />
               <input type="tel" placeholder="7700 900123" aria-label="WhatsApp number" autoComplete="tel-national" value={phone} onChange={(e) => { setPhone(e.target.value); setError(''); }}
                 style={{ flex: '1 1 130px', minWidth: 0, height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
-              <button type="button" onClick={onVerify} className="asc-verify-btn" style={{
-                flex: '0 1 auto', height: 38, padding: '0 16px', border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10,
-                background: GLASS_FIELD, color: BONE, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700,
+              <button type="button" onClick={onVerify} className="asc-btn-glass asc-btn-glass--subtle" style={{
+                flex: '0 1 auto', height: 38, padding: '0 16px', borderRadius: 10,
+                color: BONE, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700,
                 textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 16, cursor: 'pointer', whiteSpace: 'nowrap',
               }}>{verifySent ? 'Code sent' : 'Verify WhatsApp Number'}</button>
             </div>
@@ -239,10 +239,10 @@ function WebinarForm() {
 
           <span style={{ fontSize: 14, color: GLASS_DIM }}>We verify your number to make sure webinar updates reach the correct person.</span>
 
-          <button type="button" onClick={onContinue} className="asc-cta-primary" style={{
-            width: '100%', height: 46, border: 0, borderRadius: 12, background: '#E4141A', color: WHITE,
+          <button type="button" onClick={onContinue} className="asc-btn-glass asc-btn-glass--red" style={{
+            width: '100%', height: 46, borderRadius: 12, color: WHITE,
             fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em',
-            fontSize: 20, cursor: 'pointer', boxShadow: '0 8px 24px rgba(228,20,26,.28)',
+            fontSize: 20, cursor: 'pointer',
           }}>Continue</button>
 
           <span style={{ fontSize: 12, lineHeight: 1.5, color: GLASS_DIM }}>Your details will be used to assess whether the upcoming webinar is relevant to you. Selected participants will receive registration information by email and WhatsApp.</span>
@@ -260,13 +260,13 @@ function WebinarForm() {
             style={{ width: '100%', height: 60, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 12, padding: '0 18px', fontFamily: "'Anton',sans-serif", fontSize: 30, letterSpacing: '.42em', color: BONE, background: GLASS_FIELD }} />
           <span style={{ fontSize: 14, color: GLASS_DIM }}>{codeHint}</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <button type="button" onClick={onConfirmCode} className="asc-cta-primary" style={{
-              width: '100%', height: 46, border: 0, borderRadius: 12, background: '#E4141A', color: WHITE,
+            <button type="button" onClick={onConfirmCode} className="asc-btn-glass asc-btn-glass--red" style={{
+              width: '100%', height: 46, borderRadius: 12, color: WHITE,
               fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em',
-              fontSize: 20, cursor: 'pointer', boxShadow: '0 8px 24px rgba(228,20,26,.28)',
+              fontSize: 20, cursor: 'pointer',
             }}>Confirm &amp; join the list</button>
-            <button type="button" onClick={onBack} className="asc-cta-ghost" style={{
-              width: '100%', height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 12, background: 'rgba(255,255,255,0.08)',
+            <button type="button" onClick={onBack} className="asc-btn-glass asc-btn-glass--clear" style={{
+              width: '100%', height: 38, borderRadius: 12,
               color: BONE, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase',
               letterSpacing: '.04em', fontSize: 16, cursor: 'pointer',
             }}>Back to details</button>
@@ -484,7 +484,7 @@ function Host() {
           <span style={{ fontSize: 19, color: BONE_DIM }}>Founder, Alliance Street Group</span>
           <div style={{ width: 64, height: 3, background: '#E4141A', margin: '6px 0' }} />
           <p style={{ margin: 0, maxWidth: 640, fontSize: 18, lineHeight: 1.65, color: BONE_DIM, textWrap: 'pretty' }}>Stallone works with entrepreneurs, internationally active businesses, and investors seeking practical guidance on UAE company formation, banking, international expansion, and compliant cross-border business structures.</p>
-          <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-cta-pill-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, background: 'rgba(255,255,255,0.055)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
+          <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--clear" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
         </div>
       </div>
     </section>
@@ -563,15 +563,15 @@ function Book() {
         </h2>
         <p className="reveal" style={{ margin: 0, maxWidth: 720, fontSize: 19, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>If you are currently considering a UAE company, international structure, relocation, banking solution, or business expansion, you can speak with our team before the webinar.</p>
         <div className="asc-cta-row book-cta" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16, marginTop: 8 }}>
-          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-book-link" style={{
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--red" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Barlow Condensed',sans-serif",
             fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 19, color: WHITE,
-            background: '#E4141A', borderRadius: 999, padding: '17px 34px', boxShadow: '0 0 30px rgba(228,20,26,.45)',
+            borderRadius: 999, padding: '17px 34px',
           }}>Book a Consultation</a>
-          <a href="#form" className="asc-cta-pill-outline" style={{
+          <a href="#form" className="asc-btn-glass asc-btn-glass--clear" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Barlow Condensed',sans-serif",
             fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 19, color: BONE,
-            background: 'rgba(255,255,255,0.055)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 999, padding: '17px 34px',
+            borderRadius: 999, padding: '17px 34px',
           }}>I&apos;ll Wait for the Webinar</a>
         </div>
         <span className="reveal" style={{ fontSize: 14, color: BONE_DIM }}>Choose a convenient time to discuss your current situation with an Alliance Street adviser.</span>

@@ -82,20 +82,95 @@ input:focus, select:focus {
 }
 input::placeholder { color: #9A9AA2; }
 
-.asc-book-link { transition: background .2s, box-shadow .2s; }
-.asc-book-link:hover { background: #F43A3F !important; box-shadow: 0 0 24px rgba(228, 20, 26, .30); }
+/* ==================================================================
+   LIQUID GLASS — BUTTONS
+   Same material language as the cards. The sheen is a layered
+   background gradient rather than a pseudo-element, so it can't stack
+   above the label and needs no z-index juggling.
 
-.asc-cta-primary { transition: background .2s, box-shadow .2s; }
-.asc-cta-primary:hover { background: #F43A3F !important; box-shadow: 0 10px 30px rgba(228, 20, 26, .38) !important; }
+   The red CTAs stay saturated on purpose: they are the conversion
+   surface, and a see-through primary button would both lose presence
+   and put white text on an unpredictable composite. They get the glass
+   *surface* (gloss, lip, depth) while keeping their colour.
+   ================================================================== */
 
-.asc-cta-ghost { transition: border-color .2s; }
-.asc-cta-ghost:hover { border-color: #111113 !important; }
+.asc-btn-glass {
+  position: relative;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  transition: background .28s ease, box-shadow .28s ease,
+              border-color .28s ease, color .28s ease;
+}
 
-.asc-cta-pill-outline { transition: border-color .2s, color .2s; }
-.asc-cta-pill-outline:hover { border-color: #E4141A !important; color: #E4141A !important; }
+/* --- Primary red --- */
+.asc-btn-glass--red {
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.08) 32%, rgba(255,255,255,0) 56%),
+    linear-gradient(180deg, #E51A20 0%, #C40D12 100%);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    0 10px 26px rgba(228, 20, 26, 0.34);
+}
+.asc-btn-glass--red:hover {
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.12) 34%, rgba(255,255,255,0) 58%),
+    linear-gradient(180deg, #F02F35 0%, #CC0F14 100%);
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 14px 36px rgba(228, 20, 26, 0.48),
+    0 0 32px rgba(228, 20, 26, 0.34);
+}
 
-.asc-verify-btn { transition: background .2s, border-color .2s; }
-.asc-verify-btn:hover { background: #E4141A !important; border-color: #E4141A !important; }
+/* --- Clear glass, sitting on the dark canvas --- */
+.asc-btn-glass--clear {
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.05) 34%, rgba(255,255,255,0) 58%),
+    rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 26px rgba(0, 0, 0, 0.34);
+}
+.asc-btn-glass--clear:hover {
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.08) 34%, rgba(255,255,255,0) 58%),
+    rgba(228, 20, 26, 0.16);
+  border-color: rgba(228, 20, 26, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 14px 32px rgba(0, 0, 0, 0.4),
+    0 0 28px rgba(228, 20, 26, 0.28);
+}
+
+/* --- Quiet glass, used inside the dark-glass form --- */
+.asc-btn-glass--subtle {
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 34%, rgba(255,255,255,0) 58%),
+    rgba(18, 18, 20, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    0 6px 18px rgba(0, 0, 0, 0.34);
+}
+.asc-btn-glass--subtle:hover {
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 34%, rgba(255,255,255,0) 58%),
+    rgba(228, 20, 26, 0.82);
+  border-color: rgba(228, 20, 26, 0.85);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 8px 22px rgba(228, 20, 26, 0.36);
+}
+
+/* Without backdrop-filter, fall back to opaque so labels stay legible. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .asc-btn-glass--clear { background: rgba(38, 38, 40, 0.96); }
+  .asc-btn-glass--subtle { background: rgba(18, 18, 20, 0.96); }
+}
 
 .asc-footer-link:hover { color: #E4141A !important; }
 
@@ -233,7 +308,6 @@ input::placeholder { color: #9A9AA2; }
 }
 /* Native dropdown list renders on the OS surface, not the glass. */
 .asc-form-card select option { background: #141416; color: #EDEAE3; }
-.asc-form-card .asc-cta-ghost:hover { border-color: #F43A3F !important; color: #F43A3F !important; }
 
 @media (max-width: 560px) {
   .asc-pad { padding-left: 18px !important; padding-right: 18px !important; }
@@ -262,7 +336,7 @@ input::placeholder { color: #9A9AA2; }
   .asc-sec-sm { padding-top: 48px !important; }
   .asc-form-card { padding: 26px 20px 24px !important; border-radius: 18px !important; }
   .asc-names { grid-template-columns: 1fr !important; }
-  .asc-verify-btn { flex: 1 1 100% !important; }
+  .asc-btn-glass--subtle { flex: 1 1 100% !important; }
   .asc-why-grid { grid-template-columns: 1fr !important; }
   .asc-cover-grid { grid-template-columns: 1fr !important; }
   .asc-footer-grid { grid-template-columns: 1fr !important; }
