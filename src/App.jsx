@@ -10,7 +10,7 @@ import './App.css';
 import { runScrollAnimations, releaseAntiFlash } from './scrollAnimations';
 import { LegalPage } from './LegalPages';
 import {
-  BOOKING_URL, SITE_URL, asset, BG, BONE, BONE_DIM, LINE, WHITE, CARD_INK, CARD_MUTED,
+  BOOKING_URL, SITE_URL, LINKEDIN_PROFILE_URL, asset, BG, BONE, BONE_DIM, LINE, WHITE, CARD_INK, CARD_MUTED,
   CARD_FAINT, CARD_LABEL, CARD_BORDER, GLASS_FIELD,
   GLASS_FIELD_BORDER, GLASS_DIVIDER, GLASS_DIM, GLASS_PANEL, LIGHT_BG,
 } from './tokens';
@@ -473,6 +473,16 @@ function Strategy() {
   );
 }
 
+// lucide dropped brand marks, so the LinkedIn glyph is inlined. currentColor
+// lets it inherit the button's text colour in every state.
+function LinkedInMark() {
+  return (
+    <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true" focusable="false" style={{ flex: 'none' }}>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
+    </svg>
+  );
+}
+
 function Host() {
   return (
     <section id="host" className="asc-pad asc-sec" style={{ padding: '96px 48px', background: BG }}>
@@ -486,7 +496,13 @@ function Host() {
           <span style={{ fontSize: 19, color: BONE_DIM }}>Founder, Alliance Street Group</span>
           <div style={{ width: 64, height: 3, background: '#E4141A', margin: '6px 0' }} />
           <p style={{ margin: 0, maxWidth: 640, fontSize: 18, lineHeight: 1.65, color: BONE_DIM, textWrap: 'pretty' }}>Stallone works with entrepreneurs, internationally active businesses, and investors seeking practical guidance on UAE company formation, banking, international expansion, and compliant cross-border business structures.</p>
-          <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--clear" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, marginTop: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
+          <div className="host-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, marginTop: 10 }}>
+            <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--clear" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
+            <a href={LINKEDIN_PROFILE_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--clear" aria-label="Stallone Shaikh on LinkedIn (opens in a new tab)" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, borderRadius: 999, padding: '14px 26px' }}>
+              <LinkedInMark />
+              Connect on LinkedIn
+            </a>
+          </div>
         </div>
       </div>
     </section>

@@ -10,6 +10,11 @@ export const BOOKING_URL =
 // section's "Learn More" button.
 export const SITE_URL = 'https://www.alliancestreet.ae/';
 
+// Stallone Shaikh's personal LinkedIn, used in the host bio. The footer
+// keeps the company page (/company/79507309/) — person vs. brand.
+export const LINKEDIN_PROFILE_URL =
+  'https://www.linkedin.com/in/stallone-shaikh-033a38118';
+
 // Vite only rewrites asset paths it can see (CSS url(), imports). Plain
 // strings in JSX and inline styles need the base prefix applied by hand,
 // or they 404 when the site is served from a subpath (GitHub Pages).
