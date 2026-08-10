@@ -45,27 +45,47 @@ const FAQS = [
   ['Can I speak with someone before the webinar?', 'Yes. After joining the waitlist, you may book a consultation if your situation is time-sensitive.'],
 ];
 
+// Portraits are the same stills these clients already appear as on
+// alliancestreet.ae, cropped square to the face and downscaled to 128px.
 const TESTIMONIALS = [
-  { quote: 'We’ve got our visas, bank accounts start to be opened, and we’ve just really benefited from his full ground knowledge of the, UK, tax and banking system and the same in The UAE. And, I wouldn’t feel happier in anyone else’s hands!', name: 'Charlotte', company: 'Henley Finance' },
-  { quote: 'They are providing all of the education and resources that you need to understand that you’re making a really good decision for your life and your business. So if you’re on the fence, don’t hesitate. Just reach out, and then they’re more than happy to help you.', name: 'Phaibion', company: 'Royal Energy Marketing' },
-  { quote: 'I could see that he understood the needs and requirements of our company. We embarked on the process, arrived in The UAE, and it’s been a seamless flow of meetings, and we have everything in place for our new business life in The UAE.', name: 'Richard', company: 'Padbrook Finance' },
+  { quote: 'We’ve got our visas, bank accounts start to be opened, and we’ve just really benefited from his full ground knowledge of the, UK, tax and banking system and the same in The UAE. And, I wouldn’t feel happier in anyone else’s hands!', name: 'Charlotte', company: 'Henley Finance', photo: 'images/clients/charlotte.jpg' },
+  { quote: 'They are providing all of the education and resources that you need to understand that you’re making a really good decision for your life and your business. So if you’re on the fence, don’t hesitate. Just reach out, and then they’re more than happy to help you.', name: 'Phaibion', company: 'Royal Energy Marketing', photo: 'images/clients/phaibion.jpg' },
+  { quote: 'I could see that he understood the needs and requirements of our company. We embarked on the process, arrived in The UAE, and it’s been a seamless flow of meetings, and we have everything in place for our new business life in The UAE.', name: 'Richard', company: 'Padbrook Finance', photo: 'images/clients/richard.jpg' },
 ];
 
 function initials(name) {
   return name.trim().charAt(0).toUpperCase();
 }
 
-function Avatar({ name }) {
+// Shows the client's photo, falling back to their initial if the file is
+// missing or fails to load — the tinted disc is identical either way, so a
+// broken image degrades to the old look rather than a torn layout.
+function Avatar({ name, photo }) {
+  const [failed, setFailed] = useState(false);
+
   return (
     <span style={{
-      width: 52, height: 52, borderRadius: 999, flex: 'none',
+      width: 52, height: 52, borderRadius: 999, flex: 'none', overflow: 'hidden',
       background: 'rgba(228,20,26,0.09)', display: 'flex',
       alignItems: 'center', justifyContent: 'center',
     }}>
-      <span style={{
-        fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700,
-        fontSize: 20, color: '#E4141A',
-      }}>{initials(name)}</span>
+      {photo && !failed ? (
+        <img
+          src={asset(photo)}
+          alt={`${name}, Alliance Street client`}
+          width={52}
+          height={52}
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      ) : (
+        <span style={{
+          fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700,
+          fontSize: 20, color: '#E4141A',
+        }}>{initials(name)}</span>
+      )}
     </span>
   );
 }
@@ -525,7 +545,7 @@ function Credibility() {
               <Quote size={26} style={{ color: '#E4141A' }} />
               <p style={{ margin: 0, fontSize: 17, lineHeight: 1.62, color: CARD_LABEL, textWrap: 'pretty' }}>&ldquo;{t.quote}&rdquo;</p>
               <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 14, paddingTop: 6, borderTop: '1px solid #EFEFF3' }}>
-                <Avatar name={t.name} />
+                <Avatar name={t.name} photo={t.photo} />
                 <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 20, lineHeight: 1, color: CARD_INK }}>{t.name}</span>
                   <span style={{ fontSize: 15, color: CARD_MUTED }}>{t.company}</span>
