@@ -643,7 +643,7 @@ function Footer() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.20em', fontSize: 13, color: BONE_DIM }}>Follow</span>
-          <a href="https://www.linkedin.com/company/79507309/" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>LinkedIn</a>
+          <a href={LINKEDIN_PROFILE_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>LinkedIn</a>
           <a href="https://www.instagram.com/alliancestreetconsultancy/" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>Instagram</a>
           <a href="https://www.youtube.com/@Alliancestreetconsultancy22" target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>YouTube</a>
         </div>
