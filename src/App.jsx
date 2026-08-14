@@ -281,6 +281,13 @@ function WebinarForm() {
         <StepBar active={step >= 3} />
       </div>
 
+      {/* Firebase mounts the invisible reCAPTCHA here. Deliberately OUTSIDE the
+          step blocks: if it unmounted when the form moved to step 2, "Back to
+          details" would hand the next attempt a different DOM node, and a send
+          in flight during a re-render would lose its host mid-verification.
+          No visual footprint until Google decides a visitor needs challenging. */}
+      <div id={RECAPTCHA_CONTAINER_ID} />
+
       {step === 1 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
           <div className="asc-names" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 13 }}>
@@ -327,10 +334,6 @@ function WebinarForm() {
             <span style={{ fontSize: 13, color: GLASS_DIM }}>Preselected from your country — edit it if you need a different code.</span>
           </div>
 
-          {/* Firebase mounts the invisible reCAPTCHA here. It has no visual
-              footprint until Google decides a visitor needs challenging, at
-              which point it renders its own overlay. */}
-          <div id={RECAPTCHA_CONTAINER_ID} />
           <span style={{ fontSize: 12, lineHeight: 1.5, color: GLASS_DIM }}>
             Protected by reCAPTCHA — Google’s{' '}
             <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: GLASS_DIM, textDecoration: 'underline' }}>Privacy Policy</a>{' '}
