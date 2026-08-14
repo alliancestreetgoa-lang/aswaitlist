@@ -183,7 +183,7 @@ Radius scale: `10px` (buttons, inputs) → `12px` (primary/secondary CTA buttons
 - **Shape:** `10–12px` radius for rectangular CTAs, `999px` for pill CTAs (final section, header "Book a Call").
 - **Primary:** solid `#E4141A` fill, white uppercase Barlow Condensed 700 label, red-tinted glow shadow. Hover shifts fill to `#F43A3F` and deepens the glow.
 - **Secondary (dark canvas):** translucent white fill (`rgba(255,255,255,0.055)`), `rgba(255,255,255,0.2)` border, bone-colored label — used for "I'll Wait for the Webinar" and "Learn More About Alliance Street". Hover: border/text shift to red.
-- **Secondary (inside white card):** white fill, `#D8D8DE` border, dark label — the "Back to details" step-back button and the WhatsApp verify button (dark-fill variant) inside the form.
+- **Secondary (inside white card):** white fill, `#D8D8DE` border, dark label — the "Back to details" step-back button and the SMS verify button (dark-fill variant) inside the form.
 
 ### Cards
 - **Corner Style:** `18px` (content cards), `22px` (form card, portrait frame).
@@ -202,6 +202,40 @@ Sticky header, `rgba(10,10,10,.92)` fill with `14px` backdrop-blur, `1px` hairli
 
 ### FAQ Accordion (signature component)
 Borderless rows separated by hairline top-borders, question in Barlow (600, 19px) with a chevron icon, answer reveals below in `#55555C`/`#9A9A9F`. Only one row open at a time; the last FAQ starts pre-opened as a hint. No card chrome — it inherits the dark canvas directly.
+
+### Thank You page (`/thank-you`)
+
+The post-submission confirmation. It introduces no new direction — it reuses the
+hero photograph, the type ramp, the single red accent, the liquid-glass cards and
+the black → white → black → white → black section alternation, so it reads as the
+next screen of the landing page rather than a separate destination.
+
+Three pieces are specific to it:
+
+- **Confirmation seal** (`.ty-seal`): a `76px` (`64px` under 560px) solid `#E4141A`
+  disc holding a white check, lifted on a red-tinted shadow — the same disc the
+  form's step-3 panel used, scaled up. One `.ty-seal-ring` expands out of it once
+  on entrance and never repeats. This is the entire "celebration": no green, no
+  confetti, no second colour. The ring is hidden by default so a JS failure leaves
+  a clean disc rather than a stranded outline.
+- **Numbered step cards**: the "Why join" card exactly — glass-on-light, red corner
+  bloom, `48px` icon badge — with an Anton `28px` red numeral (01/02/03) beside the
+  badge, matching the hero stat card's fixed numeral size.
+- **Centred hero**: the landing hero scrims left-to-right because its copy sits
+  left; this one is centred, so it uses a vignette plus a vertical wash
+  (`.ty-hero-scrim`). Percentage radii shrink with the viewport, so the vignette is
+  widened below `760px` or it would swallow the skyline on a phone.
+
+The strategy-call CTA is deliberately the *quiet* twin of the landing page's
+"Would You Rather Not Wait?": it sits on the white section tone instead of the dark
+glowing one, and keeps the standard `clamp(34px, 3.4vw, 52px)` headline rather than
+that section's `3.6vw/56px` one-off — the confirmation must stay the loudest moment
+on the page.
+
+**The One-H1 Rule.** The hero's "You've Made the Shortlist." is the page's only
+`h1`. The closing "See You Inside." is set at the same Anton section-heading size
+but marked up as a paragraph — it is a sign-off, not a section title, and a second
+`h1` would break the heading outline.
 
 ## Do's and Don'ts
 

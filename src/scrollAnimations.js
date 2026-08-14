@@ -27,6 +27,8 @@ export function releaseAntiFlash() {
 
 function applyReducedMotionState() {
   releaseAntiFlash();
+  // Covers both views; selectors that match nothing on the current one simply
+  // contribute no elements.
   const all = [
     '.reveal', '.reveal-group > *', '.split-head',
     '.hero-badge', '.hero-title', '.hero-rule', '.hero-copy', '.hero-checks',
@@ -34,6 +36,7 @@ function applyReducedMotionState() {
     '.js-why-cards > *', '.js-testimonials > *', '.js-faq > *',
     '.strategy-copy > *', '.strategy-media', '.asc-strategy-stats > *',
     '.book-icon', '.book-cta',
+    '.ty-seal', '.ty-receipt', '.ty-hero-note', '.ty-signoff', '.js-ty-steps > *',
   ].flatMap(q);
   if (all.length) gsap.set(all, { opacity: 1, clearProps: 'transform,clipPath' });
   q('.stat-number').forEach(setCounterFinal);
@@ -509,6 +512,76 @@ function genericReveals() {
   q('.split-head').forEach((el) => maskedHeading(el));
 }
 
+/* ------------------------------------------------------------------ *
+ * Thank You hero: the confirmation beat.
+ *
+ * Order matters emotionally — the seal lands first and everything else
+ * arrives behind it, so the eye reads "confirmed" before it reads any
+ * words. Deliberately restrained: one scale-in, one ring ping, and the
+ * same masked-line reveal the landing hero uses. No bounce, no confetti.
+ * ------------------------------------------------------------------ */
+function thankYouHeroScene() {
+  const hero = document.querySelector('#top');
+  if (!hero) return;
+
+  const bg = hero.querySelector('.ty-hero-bg');
+  if (bg) {
+    gsap.to(bg, {
+      yPercent: 8,
+      ease: 'none',
+      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.6 },
+    });
+  }
+
+  const intro = gsap.timeline({ defaults: { ease: EASE } });
+
+  const seal = hero.querySelector('.ty-seal');
+  if (seal) {
+    intro.from(seal, { opacity: 0, scale: 0.6, duration: 0.75, ease: 'power3.out' }, 0);
+
+    // A single ring expanding out of the seal — the whole "celebration".
+    const ring = seal.querySelector('.ty-seal-ring');
+    if (ring) {
+      intro.fromTo(ring,
+        { opacity: 0.85, scale: 1 },
+        { opacity: 0, scale: 1.9, duration: 1.1, ease: 'power2.out' },
+        0.45);
+    }
+  }
+
+  intro.from('.hero-badge', { opacity: 0, scale: 0.9, y: 12, duration: 0.6 }, 0.3);
+
+  const title = hero.querySelector('.hero-title');
+  if (title) {
+    const split = SplitText.create(title, { type: 'lines', mask: 'lines', linesClass: 'js-line' });
+    splits.push(split);
+    gsap.set(title, { opacity: 1 });
+    intro.from(split.lines, { yPercent: 115, duration: 1, stagger: 0.09 }, 0.42);
+  }
+
+  intro.from('.hero-rule', { scaleX: 0, transformOrigin: 'center center', duration: 0.7 }, 0.72);
+  intro.from('.hero-copy', { opacity: 0, y: 18, duration: 0.75, stagger: 0.1 }, 0.78);
+  intro.from('.ty-receipt', { opacity: 0, y: 16, duration: 0.7 }, 0.95);
+  intro.from('.ty-hero-note', { opacity: 0, y: 18, duration: 0.7 }, 1.02);
+  intro.from('.ty-signoff', { opacity: 0, y: 12, duration: 0.7 }, 1.12);
+}
+
+/* The three "what happens next" cards, matching whyScene()'s stagger. */
+function thankYouStepsScene() {
+  const grid = document.querySelector('.js-ty-steps');
+  if (!grid) return;
+
+  gsap.from(grid.children, {
+    opacity: 0,
+    y: 40,
+    duration: 0.85,
+    ease: EASE_SOFT,
+    stagger: 0.12,
+    clearProps: 'transform',
+    scrollTrigger: { trigger: grid, start: 'top 82%', once: true },
+  });
+}
+
 function buildAll() {
   try {
     globalChrome();
@@ -531,20 +604,34 @@ function buildAll() {
   }
 }
 
+function buildThankYou() {
+  try {
+    globalChrome();
+    thankYouHeroScene();
+    thankYouStepsScene();
+    iconBadgeScene();
+    genericReveals();
+    cardInteractions();
+    ScrollTrigger.refresh();
+  } finally {
+    releaseAntiFlash();
+  }
+}
+
 /**
- * Sets up every scroll animation. Returns a cleanup function.
+ * Shared runner. Defers until the webfonts resolve, because SplitText measures
+ * line breaks and would otherwise split on the fallback metrics; races a
+ * timeout so a font failure can never leave a view unanimated. Returns the
+ * cleanup that kills ScrollTriggers, reverts splits and unbinds card handlers.
  */
-export function runScrollAnimations() {
+function run(build) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     applyReducedMotionState();
     return () => {};
   }
 
-  // SplitText measures line breaks, so the webfonts (Anton/Barlow) must be
-  // resolved first or the masked headings split on the fallback metrics.
-  // Race a timeout so a font failure can never leave the page unanimated.
   let cancelled = false;
-  const start = () => { if (!cancelled) buildAll(); };
+  const start = () => { if (!cancelled) build(); };
 
   if (document.fonts && document.fonts.ready) {
     Promise.race([
@@ -563,4 +650,14 @@ export function runScrollAnimations() {
     cardTeardowns.forEach((fn) => fn());
     cardTeardowns.length = 0;
   };
+}
+
+/** Landing page choreography. Returns a cleanup function. */
+export function runScrollAnimations() {
+  return run(buildAll);
+}
+
+/** Thank You page choreography. Returns a cleanup function. */
+export function runThankYouAnimations() {
+  return run(buildThankYou);
 }
