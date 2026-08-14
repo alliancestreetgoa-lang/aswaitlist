@@ -22,6 +22,7 @@ import { loadFirebaseAuth, firebaseConfigStatus } from './firebase';
 export const RECAPTCHA_CONTAINER_ID = 'asc-recaptcha-container';
 
 let verifier = null;
+let verifierSlot = null;
 let confirmation = null;
 
 /**
@@ -40,24 +41,42 @@ export function looksLikePhoneNumber(e164) {
   return /^\+[1-9]\d{7,14}$/.test(e164);
 }
 
-function getVerifier(auth, authModule) {
-  if (verifier) return verifier;
-  verifier = new authModule.RecaptchaVerifier(auth, RECAPTCHA_CONTAINER_ID, { size: 'invisible' });
+/**
+ * Builds a verifier on a brand-new throwaway element.
+ *
+ * grecaptcha permanently marks whatever element it renders into. Neither
+ * `verifier.clear()` nor wiping the host's innerHTML undoes that mark, so
+ * pointing a second verifier at the same node throws "reCAPTCHA has already
+ * been rendered in this element" — and a visitor whose first attempt failed
+ * for any reason (wrong number, rate limit, dropped connection) could then
+ * never retry without reloading the page. Giving every attempt its own child
+ * element sidesteps the problem entirely: the host div is only ever a mount
+ * point, never a render target.
+ */
+function createVerifier(auth, authModule) {
+  const host = document.getElementById(RECAPTCHA_CONTAINER_ID);
+  if (!host) throw new Error('reCAPTCHA container is missing from the page.');
+  const slot = document.createElement('div');
+  host.appendChild(slot);
+  verifierSlot = slot;
+  verifier = new authModule.RecaptchaVerifier(auth, slot, { size: 'invisible' });
   return verifier;
 }
 
 /**
- * Tears the reCAPTCHA down. Must run when the form unmounts, and again after a
- * failed send: a spent verifier cannot be reused, and leaving it attached makes
- * the next attempt fail with a confusing captcha error.
+ * Tears the reCAPTCHA down. Runs when the form unmounts, after every send
+ * (a verifier is single-use), and after a failed send. Removes the slot
+ * element rather than emptying it — see createVerifier for why that matters.
  */
 export function resetVerification({ keepConfirmation = false } = {}) {
   if (verifier) {
     try { verifier.clear(); } catch { /* already detached */ }
     verifier = null;
   }
-  const container = document.getElementById(RECAPTCHA_CONTAINER_ID);
-  if (container) container.innerHTML = '';
+  if (verifierSlot) {
+    verifierSlot.remove();
+    verifierSlot = null;
+  }
   if (!keepConfirmation) confirmation = null;
 }
 
@@ -77,11 +96,15 @@ export async function sendVerificationCode(e164) {
 
   try {
     const { auth, authModule } = await loadFirebaseAuth();
-    confirmation = await authModule.signInWithPhoneNumber(auth, e164, getVerifier(auth, authModule));
+    // Drop any verifier left over from a previous attempt before building one.
+    resetVerification({ keepConfirmation: true });
+    confirmation = await authModule.signInWithPhoneNumber(auth, e164, createVerifier(auth, authModule));
+    // A verifier is single-use even on success — "Resend Code" needs a new one.
+    resetVerification({ keepConfirmation: true });
     return confirmation;
   } catch (err) {
-    // A failed attempt burns the verifier; the next try needs a fresh one.
-    resetVerification();
+    // A failed attempt burns the verifier too; the next try needs a fresh one.
+    resetVerification({ keepConfirmation: true });
     throw new Error(describeAuthError(err));
   }
 }
@@ -126,7 +149,14 @@ export function describeAuthError(err) {
     case 'auth/quota-exceeded':
       return 'We can’t send codes right now. Please try again shortly.';
     case 'auth/captcha-check-failed':
-      return 'The security check failed. Reload the page and try again.';
+      return 'The security check failed. Please try again.';
+    // The reCAPTCHA token was refused by Firebase: expired, already spent, or
+    // scored as automated traffic. Retrying as a normal visitor usually clears
+    // it; scripted/headless clients will keep failing by design.
+    case 'auth/invalid-app-credential':
+      return import.meta.env.DEV
+        ? 'Firebase rejected the reCAPTCHA token (auth/invalid-app-credential). Usually an expired/spent token, automated traffic, or reCAPTCHA config still propagating after a project change.'
+        : 'The security check failed. Please try again.';
     // Firebase requires a billing account (Blaze) for phone auth — this fires
     // even for numbers registered as console test numbers, so a Spark-plan
     // project cannot exercise the flow at all.
