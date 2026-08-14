@@ -2,6 +2,7 @@ import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import {
   RED, WHITE, CARD_INK, CARD_MUTED, CARD_LABEL, CARD_BORDER, LIGHT_BG,
 } from './tokens';
+import { landingHref } from './routes';
 
 /*
  * IMPORTANT — these documents are a drafting starting point, not legal advice.
@@ -66,7 +67,7 @@ function Shell({ title, children }) {
     <section className="asc-pad asc-sec" style={{ padding: '72px 48px 96px', background: LIGHT_BG }}>
       <div style={{ maxWidth: 860, margin: '0 auto' }}>
         <a
-          href="#top"
+          href={landingHref()}
           className="asc-cta-pill-outline"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 28,
@@ -122,7 +123,7 @@ export function PrivacyPolicy() {
           <li style={li}>Your first and last name</li>
           <li style={li}>Your work email address</li>
           <li style={li}>The country you select</li>
-          <li style={li}>Your WhatsApp number, including its dialling code</li>
+          <li style={li}>Your mobile number, including its dialling code</li>
           <li style={li}>The six-digit code you enter to verify that number</li>
         </ul>
         <p style={p}>
@@ -134,16 +135,25 @@ export function PrivacyPolicy() {
       <div style={section}>
         <h2 style={h2}>3. Cookies, analytics and tracking</h2>
         <p style={p}>
-          This page sets no cookies. It runs no analytics, no advertising pixels,
-          and no third-party tracking scripts, and it stores nothing in your
-          browser. Fonts and images are served from this site rather than from a
-          third-party network, so loading the page does not report your visit to
-          anyone else.
+          We run no analytics, no advertising pixels and no marketing trackers.
+          Fonts and images are served from this site rather than from a
+          third-party network, so simply loading the page does not report your
+          visit to an advertiser.
         </p>
         <p style={p}>
-          If tracking or analytics is added later, this section must be updated
-          and — for anything beyond strictly necessary cookies — a consent
-          mechanism will be required.
+          There is one third-party exception, and it is strictly necessary rather
+          than optional: number verification uses Google Firebase Authentication,
+          which loads Google reCAPTCHA to check that the request comes from a
+          person and not a script. reCAPTCHA runs on Google&rsquo;s infrastructure and
+          may set cookies and collect device and usage signals under
+          Google&rsquo;s own privacy policy and terms. It is loaded on the page
+          containing the form.
+        </p>
+        <p style={p}>
+          <Confirm>whether your cookie-consent position treats reCAPTCHA as
+          strictly necessary, or requires a consent banner in your target
+          markets</Confirm>. If any non-essential analytics is added later, this
+          section must be updated and a consent mechanism will be required.
         </p>
       </div>
 
@@ -158,7 +168,7 @@ export function PrivacyPolicy() {
           <li style={li}>
             <strong style={{ color: CARD_INK }}>To contact you about the webinar.</strong>{' '}
             If you are shortlisted, we send registration details by email and
-            WhatsApp.
+            SMS.
           </li>
           <li style={li}>
             <strong style={{ color: CARD_INK }}>To verify your number.</strong> The
@@ -174,13 +184,23 @@ export function PrivacyPolicy() {
       </div>
 
       <div style={section}>
-        <h2 style={h2}>5. WhatsApp verification</h2>
+        <h2 style={h2}>5. Number verification</h2>
         <p style={p}>
-          Verification messages are delivered over WhatsApp, which means your
-          number is processed by Meta as part of sending that message. Their
-          handling of it is governed by their own terms and privacy policy, not
-          this one. We use <Confirm>the WhatsApp Business provider or BSP used to
-          send verification codes</Confirm>.
+          Verification codes are sent by SMS through Google Firebase
+          Authentication. Your number, the code, and signals about the device
+          making the request are therefore processed by Google as part of sending
+          and checking that message, under Google&rsquo;s own terms and privacy
+          policy rather than this one. Google may retain the number for abuse
+          prevention.
+        </p>
+        <p style={p}>
+          Verification creates a short-lived Google authentication record for the
+          number. We end that session as soon as the code is confirmed and use it
+          for nothing else &mdash; it exists only to prove the number reaches you.
+        </p>
+        <p style={p}>
+          <Confirm>the Firebase project owner, its data region, and whether a
+          Google Cloud data processing addendum is in place</Confirm>.
         </p>
       </div>
 
@@ -297,7 +317,7 @@ export function TermsAndConditions() {
       <div style={section}>
         <h2 style={h2}>4. Your side of it</h2>
         <p style={p}>
-          Please give accurate details and use a WhatsApp number and email address
+          Please give accurate details and use a mobile number and email address
           you are entitled to use — verification exists so updates reach the right
           person. Do not submit anyone else's details without their permission,
           and do not use the form to send unlawful or abusive content. We may

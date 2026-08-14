@@ -48,7 +48,11 @@ a:hover { color: #C40D12; }
 .js-anim .hero-copy,
 .js-anim .hero-checks > *,
 .js-anim .hero-stat,
-.js-anim .hero-form { opacity: 0; }
+.js-anim .hero-form,
+.js-anim .ty-seal,
+.js-anim .ty-receipt,
+.js-anim .ty-hero-note,
+.js-anim .ty-signoff { opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .js-anim .hero-badge,
@@ -56,11 +60,16 @@ a:hover { color: #C40D12; }
   .js-anim .hero-copy,
   .js-anim .hero-checks > *,
   .js-anim .hero-stat,
-  .js-anim .hero-form { opacity: 1; }
+  .js-anim .hero-form,
+  .js-anim .ty-seal,
+  .js-anim .ty-receipt,
+  .js-anim .ty-hero-note,
+  .js-anim .ty-signoff { opacity: 1; }
 }
 
 /* Layers that animate continuously get a compositor hint. */
 .asc-hero-bg,
+.ty-hero-bg,
 .asc-hero-grid,
 .cover-glow,
 .book-glow,
@@ -69,9 +78,35 @@ a:hover { color: #C40D12; }
 @media (prefers-reduced-motion: reduce) {
   .asc-progress { display: none; }
   .asc-hero-bg,
+  .ty-hero-bg,
   .asc-hero-grid,
   .cover-glow,
   .book-glow { will-change: auto; }
+}
+
+/* ==================================================================
+   THANK YOU PAGE
+   Only the pieces the landing page has no equivalent for. Everything
+   else on that page reuses .asc-card / .asc-glass / .asc-icon-badge /
+   .asc-why-grid / .asc-pad / .asc-sec as-is.
+   ================================================================== */
+
+/* The confirmation seal: red disc + check, matching the disc the form's
+   own step-3 panel used. */
+.ty-seal { position: relative; will-change: transform; }
+
+/* Unclipped so the check's round stroke caps aren't shaved. */
+.ty-seal > svg { position: relative; z-index: 1; overflow: visible; }
+
+/* One ring pinging outward once, on entrance. Hidden by default so a JS
+   failure leaves a clean disc rather than a stranded outline. */
+.ty-seal-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  border: 2px solid rgba(228, 20, 26, 0.55);
+  opacity: 0;
+  pointer-events: none;
 }
 
 input, select, button { font-family: 'Barlow', system-ui, sans-serif; }
@@ -371,4 +406,45 @@ input::placeholder { color: #9A9AA2; }
   .asc-footer-grid { grid-template-columns: 1fr !important; }
   .asc-host-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
   .asc-strategy-stats { grid-template-columns: 1fr !important; gap: 28px !important; margin-top: 48px !important; padding-top: 36px !important; }
+}
+
+/* --- Thank You page responsive ---------------------------------------------
+   Declared last so these win over the shared .asc-sec / .asc-pad overrides
+   above, which are themselves !important. */
+
+@media (max-width: 1100px) {
+  /* Same release as the landing hero: once the copy is taller than the
+     viewport, a centred 100vh box would push "You're in!" off the top of the
+     screen. Let it start under the header and flow. */
+  .asc-sec.ty-hero { min-height: 0 !important; }
+}
+
+@media (max-width: 760px) {
+  /* Wider vignette + a lighter top wash, so the skyline still reads on a phone
+     instead of going flat black. Text contrast is unaffected: the copy sits
+     over the centre, which barely changes. */
+  .ty-hero-scrim {
+    background-image:
+      radial-gradient(170% 70% at 50% 42%, rgba(10, 10, 10, 0.20) 0%, rgba(10, 10, 10, 0.70) 100%),
+      linear-gradient(180deg, rgba(10, 10, 10, 0.40) 0%, rgba(10, 10, 10, 0.16) 42%, rgba(10, 10, 10, 0.96) 100%)
+      !important;
+  }
+
+  /* On a phone the copy fills nearly the whole width, so the pool has to cover
+     it rather than sit as an island in the middle. */
+  .ty-hero-pool {
+    width: 132% !important;
+    height: 82% !important;
+    background: radial-gradient(closest-side,
+      rgba(10, 10, 10, 0.80) 0%,
+      rgba(10, 10, 10, 0.74) 52%,
+      rgba(10, 10, 10, 0.40) 80%,
+      rgba(10, 10, 10, 0) 100%) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .ty-seal { width: 64px !important; height: 64px !important; }
+  .ty-hero-note { padding: 12px 16px !important; gap: 12px !important; }
+  .ty-receipt { gap: 4px 18px !important; padding: 12px 14px !important; }
 }

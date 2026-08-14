@@ -10,7 +10,7 @@ UK and internationally active business owners and investors researching UAE comp
 
 ## Product Purpose
 
-A priority-access waitlist landing page for Alliance Street Group's next live webinar on UAE company structures, tax, banking, and relocation. It exists to convert interested visitors into verified leads (name, work email, WhatsApp-confirmed phone) for a shortlisted, invite-only session, while offering an escape hatch to book a paid consultation directly for anyone who doesn't want to wait. Success is a completed, WhatsApp-verified signup; secondary success is a consultation booking via the "Would You Rather Not Wait?" CTA.
+A priority-access waitlist landing page for Alliance Street Group's next live webinar on UAE company structures, tax, banking, and relocation. It exists to convert interested visitors into verified leads (name, work email, SMS-confirmed phone) for a shortlisted, invite-only session, while offering an escape hatch to book a paid consultation directly for anyone who doesn't want to wait. Success is a completed, SMS-verified signup; secondary success is a consultation booking via the "Would You Rather Not Wait?" CTA.
 
 ## Brand Personality
 
@@ -24,7 +24,7 @@ Explicitly not the generic SaaS/startup look: no soft cream or beige surfaces, n
 
 - **Credibility over friendliness.** Every design decision should read as "serious operator," not "friendly startup." When in doubt, choose the more restrained, authoritative option.
 - **One CTA, repeated.** The signup flow and the "book a consultation" escape hatch are the only two paths that matter; every section should point back toward one of them, never toward decorative distraction.
-- **Verification is a feature, not friction.** The WhatsApp OTP step signals rigor (this operator doesn't take fake leads) — treat it as reinforcing trust, not as a UX cost to minimize away.
+- **Verification is a feature, not friction.** The SMS OTP step signals rigor (this operator doesn't take fake leads) — treat it as reinforcing trust, not as a UX cost to minimize away.
 - **Red is scarce.** Red is the single accent that carries all emphasis (CTAs, stats, active states); if everything is red, nothing is.
 - **Consistency with the parent brand.** This page inherits alliancestreet.ae's Swiss-dark visual system (near-black bg, bone text, grain texture, Anton/Barlow Condensed type) rather than inventing a new one — it should feel like the same company, not a spin-off microsite.
 

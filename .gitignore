@@ -28,3 +28,8 @@ dist-ssr
 .impeccable/config.local.json
 .impeccable/live/roots.json
 .impeccable/live/inject-journal.json
+
+# Local env (Vite). Values are public-by-design but stay out of git.
+.env
+.env.local
+.env.*.local

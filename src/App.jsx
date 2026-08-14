@@ -7,8 +7,15 @@ import {
   Mail, Phone,
 } from 'lucide-react';
 import './App.css';
-import { runScrollAnimations, releaseAntiFlash } from './scrollAnimations';
+import { runScrollAnimations, runThankYouAnimations, releaseAntiFlash } from './scrollAnimations';
 import { LegalPage } from './LegalPages';
+import ThankYou from './ThankYou';
+import { ROUTES, readRoute, goToThankYou, homeHref, hashHref } from './routes';
+import { setSubmission } from './submission';
+import {
+  RECAPTCHA_CONTAINER_ID, toE164, sendVerificationCode, confirmVerificationCode,
+  resetVerification,
+} from './phoneVerification';
 import {
   BOOKING_URL, SITE_URL, LINKEDIN_PROFILE_URL, asset, BG, BONE, BONE_DIM, LINE, WHITE, CARD_INK, CARD_MUTED,
   CARD_FAINT, CARD_LABEL, CARD_BORDER, GLASS_FIELD,
@@ -40,8 +47,8 @@ const FAQS = [
   ['Is this the final webinar registration?', 'No. This is the priority list. Registration details are sent separately once the next session date is confirmed.'],
   ['Does joining guarantee a place?', 'No. Places are limited and applicants are shortlisted based on relevance to the session topic.'],
   ['Is it free to join?', 'Yes. Joining the priority list is free and carries no obligation.'],
-  ['Why do I need to verify my WhatsApp number?', 'Verification makes sure webinar updates reach the correct person and reduces false or duplicate entries.'],
-  ['When will I receive an update?', 'You will hear from us as soon as the next session date is released, by email and WhatsApp.'],
+  ['Why do I need to verify my number?', 'We text you a one-time code. Verifying makes sure webinar updates reach the correct person and reduces false or duplicate entries.'],
+  ['When will I receive an update?', 'You will hear from us as soon as the next session date is released, by email and SMS.'],
   ['Can I speak with someone before the webinar?', 'Yes. After joining the waitlist, you may book a consultation if your situation is time-sensitive.'],
 ];
 
@@ -102,7 +109,12 @@ function Logo() {
   );
 }
 
-function Header() {
+/**
+ * `minimal` strips the nav and the "Book a Call" CTA, leaving just the logo.
+ * The Thank You page uses it: someone who has only just registered should be
+ * looking at what happens next, not at another call to action in the chrome.
+ */
+function Header({ minimal = false, logoHref = '#top' }) {
   return (
     <header className="asc-pad" style={{
       position: 'sticky', top: 0, zIndex: 40, display: 'flex', flexWrap: 'wrap',
@@ -110,16 +122,18 @@ function Header() {
       padding: '14px 48px', background: 'rgba(10,10,10,.92)', backdropFilter: 'blur(14px)',
       borderBottom: `1px solid ${LINE}`,
     }}>
-      <a href="#top"><Logo /></a>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-        <span className="asc-support" style={{ fontSize: 15, color: BONE_DIM }}>Already need support?</span>
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--red" style={{
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase',
-          letterSpacing: '.04em', fontSize: 17, color: WHITE,
-          borderRadius: 10, padding: '12px 24px',
-        }}>Book a Call</a>
-      </div>
+      <a href={logoHref} aria-label="Alliance Street Group — back to the priority list"><Logo /></a>
+      {!minimal && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <span className="asc-support" style={{ fontSize: 15, color: BONE_DIM }}>Already need support?</span>
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--red" style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '.04em', fontSize: 17, color: WHITE,
+            borderRadius: 10, padding: '12px 24px',
+          }}>Book a Call</a>
+        </div>
+      )}
     </header>
   );
 }
@@ -143,6 +157,12 @@ function WebinarForm() {
   const [code, setCode] = useState('');
   const [verifySent, setVerifySent] = useState(false);
   const [error, setError] = useState('');
+  // Real network calls now, so both directions need a pending state.
+  const [sending, setSending] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  // The exact E.164 the SMS went to — shown back on step 2, so the visitor can
+  // spot a typo before blaming the code.
+  const [sentTo, setSentTo] = useState('');
 
   const countryDial = (COUNTRIES.find((c) => c.code === country) || COUNTRIES[0]).dial;
   const dialCode = dialOverride ?? countryDial;
@@ -161,35 +181,89 @@ function WebinarForm() {
     setDialOverride('+' + digits);
     setError('');
   };
+  // What the visitor sees; e164 is what Firebase is given.
   const fullPhone = `${dialCode} ${phone || '—'}`;
+  const e164 = toE164(dialCode, phone);
 
-  const onVerify = () => {
-    if (!phone.trim()) return setError('Enter your WhatsApp number first.');
-    setVerifySent(true);
+  // The reCAPTCHA lives for as long as the form does. Tearing it down on
+  // unmount stops a stale widget from failing the next attempt.
+  useEffect(() => resetVerification, []);
+
+  /*
+   * Requests the SMS. Real network call now, so it owns a pending state and
+   * surfaces provider errors verbatim-ish (mapped to plain English in
+   * describeAuthError). verifySent only flips on an actual send.
+   */
+  const onVerify = async () => {
+    if (!phone.trim()) return setError('Enter your mobile number first.');
+    if (sending) return;
+    setSending(true);
     setError('');
+    try {
+      await sendVerificationCode(e164);
+      setVerifySent(true);
+      setSentTo(e164);
+    } catch (err) {
+      setVerifySent(false);
+      setError(err.message);
+    } finally {
+      setSending(false);
+    }
   };
 
   const onContinue = () => {
     if (!firstName.trim() || !lastName.trim()) return setError('Please add your first and last name.');
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return setError('Please enter a valid work email address.');
-    if (!verifySent) return setError('Select "Verify WhatsApp Number" to receive your code.');
+    if (!verifySent) return setError('Select "Send Verification Code" to receive your code.');
     setStep(2);
     setError('');
   };
 
-  const onConfirmCode = () => {
+  /*
+   * The form's only success path.
+   *
+   * The code is now checked by Firebase, not by us: confirmVerificationCode
+   * rejects unless the provider accepts the six digits for the number the SMS
+   * actually went to. So reaching the Thank You page requires a genuinely
+   * verified number — a guessed or expired code throws and keeps the visitor
+   * here with an error.
+   *
+   * Still true: nothing is posted to a CRM or lead store, because the project
+   * has no backend. This confirms the number and navigates; persisting the lead
+   * is the remaining piece of work.
+   *
+   * setStep(3) stays: it keeps the step machine coherent, and leaves the inline
+   * confirmation panel as a fallback if navigation is ever blocked.
+   */
+  const onConfirmCode = async () => {
     if (code.length !== 6) return setError('Enter the full six-digit code.');
-    setStep(3);
+    if (confirming) return;
+    setConfirming(true);
     setError('');
+    try {
+      await confirmVerificationCode(code);
+    } catch (err) {
+      setError(err.message);
+      setConfirming(false);
+      return;
+    }
+    setConfirming(false);
+    setStep(3);
+    setSubmission({ email, phone: fullPhone });
+    goToThankYou();
   };
 
   const onBack = () => { setStep(1); setError(''); };
 
   const stepLabel = ['Contact details', 'Verification', 'Confirmed'][step - 1];
-  const verifyNote = error || (verifySent
-    ? 'A one-time six-digit code is on its way to your WhatsApp. Select Continue to enter it.'
-    : 'Number not verified. Select "Verify WhatsApp Number" and we will send a one-time six-digit code to that number.');
-  const codeHint = error || 'Didn’t arrive? Codes can take up to a minute.';
+  const verifyNote = error || (sending
+    ? 'Sending your code…'
+    : verifySent
+      ? 'A one-time six-digit code is on its way by SMS. Select Continue to enter it.'
+      : 'Number not verified. Select "Send Verification Code" and we will text a one-time six-digit code to that number.');
+  const codeHint = error || (confirming
+    ? 'Checking your code…'
+    : 'Didn’t arrive? Codes can take up to a minute.');
 
   return (
     <div id="form" className="asc-form-card hero-form asc-glass asc-glass--on-photo" style={{
@@ -230,7 +304,7 @@ function WebinarForm() {
             </select>
           </label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 15, color: BONE }}>
-            WhatsApp number
+            Mobile number
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
               <input
                 type="tel"
@@ -241,23 +315,36 @@ function WebinarForm() {
                 onChange={onDial}
                 style={{ width: 74, flex: 'none', height: 38, padding: '0 10px', borderRadius: 10, background: GLASS_FIELD, border: `1px solid ${GLASS_FIELD_BORDER}`, fontWeight: 600, fontSize: 16, color: BONE, textAlign: 'center' }}
               />
-              <input type="tel" placeholder="7700 900123" aria-label="WhatsApp number" autoComplete="tel-national" value={phone} onChange={(e) => { setPhone(e.target.value); setError(''); }}
+              <input type="tel" placeholder="7400 123456" aria-label="Mobile number" autoComplete="tel-national" value={phone} onChange={(e) => { setPhone(e.target.value); setError(''); }}
                 style={{ flex: '1 1 130px', minWidth: 0, height: 38, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 10, padding: '0 14px', fontSize: 16, color: BONE, background: GLASS_FIELD }} />
-              <button type="button" onClick={onVerify} className="asc-btn-glass asc-btn-glass--subtle" style={{
+              <button type="button" onClick={onVerify} disabled={sending} aria-busy={sending} className="asc-btn-glass asc-btn-glass--subtle" style={{
                 flex: '0 1 auto', height: 38, padding: '0 16px', borderRadius: 10,
                 color: BONE, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700,
-                textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 16, cursor: 'pointer', whiteSpace: 'nowrap',
-              }}>{verifySent ? 'Code sent' : 'Verify WhatsApp Number'}</button>
+                textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 16,
+                cursor: sending ? 'wait' : 'pointer', opacity: sending ? 0.7 : 1, whiteSpace: 'nowrap',
+              }}>{sending ? 'Sending…' : verifySent ? 'Resend Code' : 'Send Verification Code'}</button>
             </div>
             <span style={{ fontSize: 13, color: GLASS_DIM }}>Preselected from your country — edit it if you need a different code.</span>
           </div>
+
+          {/* Firebase mounts the invisible reCAPTCHA here. It has no visual
+              footprint until Google decides a visitor needs challenging, at
+              which point it renders its own overlay. */}
+          <div id={RECAPTCHA_CONTAINER_ID} />
+          <span style={{ fontSize: 12, lineHeight: 1.5, color: GLASS_DIM }}>
+            Protected by reCAPTCHA — Google’s{' '}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: GLASS_DIM, textDecoration: 'underline' }}>Privacy Policy</a>{' '}
+            and{' '}
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" style={{ color: GLASS_DIM, textDecoration: 'underline' }}>Terms</a>{' '}
+            apply.
+          </span>
 
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: GLASS_PANEL, border: `1px solid ${GLASS_DIVIDER}`, borderRadius: 12, padding: '11px 14px' }}>
             <ShieldCheck size={18} style={{ color: '#E4141A', flex: 'none', marginTop: 2 }} />
             <span style={{ fontSize: 14, lineHeight: 1.5, color: BONE }}>{verifyNote}</span>
           </div>
 
-          <span style={{ fontSize: 14, color: GLASS_DIM }}>We verify your number to make sure webinar updates reach the correct person.</span>
+          <span style={{ fontSize: 14, color: GLASS_DIM }}>We text a one-time code to make sure webinar updates reach the correct person.</span>
 
           <button type="button" onClick={onContinue} className="asc-btn-glass asc-btn-glass--red" style={{
             width: '100%', height: 46, borderRadius: 12, color: WHITE,
@@ -265,7 +352,7 @@ function WebinarForm() {
             fontSize: 20, cursor: 'pointer',
           }}>Continue</button>
 
-          <span style={{ fontSize: 12, lineHeight: 1.5, color: GLASS_DIM }}>Your details will be used to assess whether the upcoming webinar is relevant to you. Selected participants will receive registration information by email and WhatsApp.</span>
+          <span style={{ fontSize: 12, lineHeight: 1.5, color: GLASS_DIM }}>Your details will be used to assess whether the upcoming webinar is relevant to you. Selected participants will receive registration information by email and SMS.</span>
         </div>
       )}
 
@@ -273,18 +360,18 @@ function WebinarForm() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 26 }}>
           <div>
             <h2 style={{ margin: '0 0 6px', fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.02em', fontSize: 26, color: BONE }}>Confirm your number</h2>
-            <p style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: GLASS_DIM }}>Enter the six-digit code we sent to <strong style={{ color: BONE }}>{fullPhone}</strong> on WhatsApp.</p>
+            <p style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: GLASS_DIM }}>Enter the six-digit code we sent to <strong style={{ color: BONE }}>{sentTo || fullPhone}</strong> by SMS.</p>
           </div>
           <input type="text" inputMode="numeric" maxLength={6} placeholder="000000" aria-label="Six-digit verification code" autoComplete="one-time-code" value={code}
             onChange={(e) => { setCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
             style={{ width: '100%', height: 60, border: `1px solid ${GLASS_FIELD_BORDER}`, borderRadius: 12, padding: '0 18px', fontFamily: "'Anton',sans-serif", fontSize: 30, letterSpacing: '.42em', color: BONE, background: GLASS_FIELD }} />
           <span style={{ fontSize: 14, color: GLASS_DIM }}>{codeHint}</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <button type="button" onClick={onConfirmCode} className="asc-btn-glass asc-btn-glass--red" style={{
+            <button type="button" onClick={onConfirmCode} disabled={confirming} aria-busy={confirming} className="asc-btn-glass asc-btn-glass--red" style={{
               width: '100%', height: 46, borderRadius: 12, color: WHITE,
               fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em',
-              fontSize: 20, cursor: 'pointer',
-            }}>Confirm &amp; join the list</button>
+              fontSize: 20, cursor: confirming ? 'wait' : 'pointer', opacity: confirming ? 0.7 : 1,
+            }}>{confirming ? 'Verifying…' : 'Confirm & join the list'}</button>
             <button type="button" onClick={onBack} className="asc-btn-glass asc-btn-glass--clear" style={{
               width: '100%', height: 38, borderRadius: 12,
               color: BONE, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase',
@@ -300,7 +387,7 @@ function WebinarForm() {
             <Check size={28} style={{ color: WHITE }} />
           </span>
           <h2 style={{ margin: 0, fontFamily: "'Anton',sans-serif", textTransform: 'uppercase', fontSize: 36, lineHeight: 1, color: BONE }}>You&apos;re on the list</h2>
-          <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: GLASS_DIM }}>Thank you, {firstName || 'there'}. Your interest has been recorded. When the next live session is released, shortlisted applicants receive the registration details by email and WhatsApp first.</p>
+          <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: GLASS_DIM }}>Thank you, {firstName || 'there'}. Your interest has been recorded. When the next live session is released, shortlisted applicants receive the registration details by email and SMS first.</p>
           <div style={{ width: '100%', borderTop: `1px solid ${GLASS_DIVIDER}`, paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ fontSize: 14, color: GLASS_DIM }}>Confirmation sent to</span>
             <span style={{ fontSize: 16, fontWeight: 600, color: BONE }}>{email || '—'}</span>
@@ -636,8 +723,8 @@ function Footer() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.20em', fontSize: 13, color: BONE_DIM }}>Legal</span>
-          <a href="#/privacy" className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Privacy Policy</a>
-          <a href="#/terms" className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Terms and Conditions</a>
+          <a href={hashHref('#/privacy')} className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Privacy Policy</a>
+          <a href={hashHref('#/terms')} className="asc-footer-link" style={{ fontSize: 16, color: BONE_DIM }}>Terms and Conditions</a>
           <a href="mailto:info@alliancestreet.ae" style={{ fontSize: 16, color: BONE_DIM }}>Contact</a>
           <a href={SITE_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: 16, color: BONE_DIM }}>Website</a>
         </div>
@@ -656,57 +743,70 @@ function Footer() {
   );
 }
 
-/**
- * Minimal hash routing. Routes use a `#/` prefix specifically so they can't
- * collide with the in-page anchor links (`#top`, `#form`, `#faq`), and because
- * hash routes need no server rewrite — which matters on GitHub Pages, where a
- * path-based route would 404 on refresh.
- */
-function readRoute() {
-  const h = window.location.hash;
-  if (h.startsWith('#/privacy')) return 'privacy';
-  if (h.startsWith('#/terms')) return 'terms';
-  return 'home';
-}
+const ROUTE_TITLES = {
+  [ROUTES.HOME]: 'Priority Access Webinar Series | Alliance Street Group',
+  [ROUTES.THANK_YOU]: 'You’re on the shortlist | Alliance Street Group',
+  [ROUTES.PRIVACY]: 'Privacy Policy | Alliance Street Group',
+  [ROUTES.TERMS]: 'Terms and Conditions | Alliance Street Group',
+};
 
-function useHashRoute() {
+/**
+ * Route state. The route table itself lives in routes.js — it has to be
+ * importable by the form (to navigate) without dragging in this whole module.
+ *
+ * Two event sources: 'hashchange' for the `#/` routes, and 'popstate' for the
+ * path-based Thank You route — which covers both the browser's back/forward
+ * buttons and the synthetic event goToThankYou() dispatches after pushState.
+ */
+function useRoute() {
   const [route, setRoute] = useState(readRoute);
   useEffect(() => {
     const onChange = () => setRoute(readRoute());
     window.addEventListener('hashchange', onChange);
-    return () => window.removeEventListener('hashchange', onChange);
+    window.addEventListener('popstate', onChange);
+    return () => {
+      window.removeEventListener('hashchange', onChange);
+      window.removeEventListener('popstate', onChange);
+    };
   }, []);
   return route;
 }
 
 export default function App() {
   const rootRef = useRef(null);
-  const route = useHashRoute();
-  const isHome = route === 'home';
+  const route = useRoute();
+  const isHome = route === ROUTES.HOME;
+  const isThankYou = route === ROUTES.THANK_YOU;
+  const isLegal = !isHome && !isThankYou;
 
-  // Land at the top when moving between the landing page and a legal page,
-  // otherwise you arrive mid-document at the old scroll offset.
+  // Land at the top when moving between views, otherwise you arrive
+  // mid-document at the previous view's scroll offset.
   useEffect(() => {
     if (!isHome) window.scrollTo(0, 0);
   }, [route, isHome]);
 
+  // One document, four views — so the title has to follow the route. Without
+  // this, /thank-you would still be announced (and bookmarked, and shared) as
+  // the registration page the visitor has already left.
+  useEffect(() => {
+    document.title = ROUTE_TITLES[route] || ROUTE_TITLES[ROUTES.HOME];
+  }, [route]);
+
   useGSAP(() => {
-    // The landing choreography targets elements that only exist on the home
-    // view. Re-runs on route change so returning home re-arms the triggers.
-    if (!isHome) {
-      releaseAntiFlash();
-      return undefined;
-    }
-    // returns a cleanup that kills ScrollTriggers and reverts SplitText
-    return runScrollAnimations();
+    // Each view has its own choreography; the legal pages have none. Re-runs on
+    // route change so returning to a view re-arms its triggers.
+    if (isHome) return runScrollAnimations();
+    if (isThankYou) return runThankYouAnimations();
+    releaseAntiFlash();
+    return undefined;
   }, { scope: rootRef, dependencies: [route] });
 
   return (
     <div className="asc-page grain" ref={rootRef}>
-      {isHome && <div className="asc-progress" aria-hidden="true" />}
-      <Header />
+      {!isLegal && <div className="asc-progress" aria-hidden="true" />}
+      <Header minimal={isThankYou} logoHref={isThankYou ? homeHref : '#top'} />
       <main>
-        {isHome ? (
+        {isHome && (
           <>
             <Hero />
             <Why />
@@ -717,9 +817,9 @@ export default function App() {
             <Faq />
             <Book />
           </>
-        ) : (
-          <LegalPage kind={route} />
         )}
+        {isThankYou && <ThankYou />}
+        {isLegal && <LegalPage kind={route} />}
       </main>
       <Footer />
     </div>

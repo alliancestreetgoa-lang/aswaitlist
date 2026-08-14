@@ -11,8 +11,19 @@
   # below 20.19 can never break the build.
   NODE_VERSION = "22"
 
-# No SPA catch-all redirect on purpose: routing is hash-based ('#/privacy',
-# '#/terms'), so every request is for '/' and the server never sees the route.
+# Still no SPA catch-all on purpose: the legal routes are hash-based
+# ('#/privacy', '#/terms'), so every request is for '/' and the server never
+# sees them. A catch-all would also turn genuine typos into a 200 home page.
+#
+# '/thank-you' is the one exception. It has to be a real, shareable URL — it is
+# what a confirmation email links to and what a conversion would be recorded
+# against — so this single path is rewritten to the app shell, which then
+# renders the Thank You route client-side (see src/routes.js). status = 200 is
+# a rewrite, not a redirect: the address bar keeps showing /thank-you.
+[[redirects]]
+  from = "/thank-you"
+  to = "/index.html"
+  status = 200
 
 # Vite fingerprints these filenames, so they can be cached forever.
 [[headers]]
