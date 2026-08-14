@@ -12,6 +12,7 @@ import { LegalPage } from './LegalPages';
 import ThankYou from './ThankYou';
 import { ROUTES, readRoute, goToThankYou, homeHref, hashHref } from './routes';
 import { setSubmission } from './submission';
+import { saveLead } from './leadStore';
 import {
   RECAPTCHA_CONTAINER_ID, toE164, sendVerificationCode, confirmVerificationCode,
   resetVerification,
@@ -228,9 +229,11 @@ function WebinarForm() {
    * verified number — a guessed or expired code throws and keeps the visitor
    * here with an error.
    *
-   * Still true: nothing is posted to a CRM or lead store, because the project
-   * has no backend. This confirms the number and navigates; persisting the lead
-   * is the remaining piece of work.
+   * The lead is written to Firestore in the beforeSignOut window — the only
+   * moment the security rules allow it (they require the verified session and
+   * pin the phone to it). The catch keeps the write best-effort: a verified
+   * visitor always reaches the Thank You page, even if persisting the lead
+   * fails; the error goes to the console instead.
    *
    * setStep(3) stays: it keeps the step machine coherent, and leaves the inline
    * confirmation panel as a fallback if navigation is ever blocked.
@@ -241,7 +244,13 @@ function WebinarForm() {
     setConfirming(true);
     setError('');
     try {
-      await confirmVerificationCode(code);
+      await confirmVerificationCode(code, {
+        beforeSignOut: () =>
+          // e164, not fullPhone: the rules pin the stored phone to the exact
+          // number Firebase verified, and that token is E.164.
+          saveLead({ firstName, lastName, email, phone: e164 })
+            .catch((err) => console.error('[lead store]', err)),
+      });
     } catch (err) {
       setError(err.message);
       setConfirming(false);

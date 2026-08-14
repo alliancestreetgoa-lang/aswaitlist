@@ -112,13 +112,20 @@ export async function sendVerificationCode(e164) {
 /**
  * Confirms the code. Resolves only if Firebase accepts it — this is what makes
  * the number genuinely verified rather than merely typed.
+ *
+ * `beforeSignOut` runs after Firebase accepts the code but while the visitor
+ * is still signed in — the only window in which Firestore's rules permit
+ * writing the lead (they require auth and pin the phone to the verified
+ * number). The callback owns its own error handling: a failed lead write must
+ * not fail the verification the visitor just completed.
  */
-export async function confirmVerificationCode(code) {
+export async function confirmVerificationCode(code, { beforeSignOut } = {}) {
   if (!confirmation) {
     throw new Error('Request a new code — the previous one is no longer valid.');
   }
   try {
     const credential = await confirmation.confirm(code);
+    if (beforeSignOut) await beforeSignOut();
     // Verification is all we wanted. The page has no signed-in features, so
     // leaving a live Firebase session behind would be a surprise to the visitor
     // and to anyone later reading the auth state. Best-effort, non-blocking.

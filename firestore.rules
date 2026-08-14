@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// Lead store for the waitlist form. The client is allowed to do exactly one
+// thing: create a lead, once verified. Reading, listing, editing and deleting
+// happen only in the Firebase console (or a future backend with admin
+// credentials) — an ad-traffic landing page has no business reading leads back.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /waitlist/{leadId} {
+      allow create: if
+        // Only a signed-in visitor, which on this site can only mean someone
+        // who just completed phone verification (see phoneVerification.js).
+        request.auth != null
+        // The stored phone must be the number Firebase actually verified —
+        // the client cannot claim a different one.
+        && request.resource.data.phone == request.auth.token.phone_number
+        // Exactly these fields, no extras.
+        && request.resource.data.keys().hasOnly(['firstName', 'lastName', 'email', 'phone', 'createdAt'])
+        && request.resource.data.firstName is string
+        && request.resource.data.firstName.size() > 0
+        && request.resource.data.firstName.size() <= 100
+        && request.resource.data.lastName is string
+        && request.resource.data.lastName.size() > 0
+        && request.resource.data.lastName.size() <= 100
+        && request.resource.data.email is string
+        && request.resource.data.email.matches('[^@\\s]+@[^@\\s]+\\.[^@\\s]+')
+        && request.resource.data.email.size() <= 254
+        // Server-stamped, so lead times can't be forged.
+        && request.resource.data.createdAt == request.time;
+
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
