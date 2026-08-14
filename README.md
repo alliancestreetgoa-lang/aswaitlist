@@ -33,6 +33,9 @@ npm run lint
   strategic design principles behind it.
 - **`DESIGN.md`** — the visual system: palette, type ramp, spacing, component
   behaviour, and the named rules the design holds itself to.
+- **`FIREBASE_SETUP.md`** — phone (SMS) verification.
+- **`TELAGUS_SETUP.md`** — where verified leads go, and the one environment
+  variable the CRM integration needs.
 
 ## Structure
 
@@ -43,9 +46,17 @@ src/
   LegalPages.jsx       privacy policy and terms
   routes.js            route table, path/hash resolution, navigation helpers
   submission.js        in-memory form -> Thank You handoff (never the URL)
+  firebase.js          lazy Firebase bootstrap (config is public by design)
+  phoneVerification.js SMS send/confirm, reCAPTCHA lifecycle, error copy
+  leadStore.js         the Firestore write
+  telagus.js           the CRM write, via our own /api/lead proxy
   App.css              layout, responsive rules, card/glass treatments
   asc-tokens.css       webfont declarations and page-level defaults
   scrollAnimations.js  the full GSAP choreography (one scene per section)
+netlify/functions/
+  lead.js              the only server we run: holds the Telagus webhook
+                       secret, and only forwards leads whose phone number
+                       Google confirms was verified
 public/
   fonts/               self-hosted woff2 (latin subset)
   images/              logo, hero photograph, founder portrait
@@ -60,10 +71,11 @@ public/
 | `#/thank-you` | GitHub Pages | fallback, since Pages can't serve an unknown path |
 | `#/privacy`, `#/terms` | footer links | hash-only; no server rewrite needed |
 
-The form navigates to `/thank-you` only after every step has validated. There is
-no API, CRM, analytics or pixel in this build, so "submitted" currently means
-"validated" — see the comment on `onConfirmCode` in `App.jsx` before wiring a real
-endpoint in.
+The form navigates to `/thank-you` only after every step has validated. A
+submission that gets there is genuinely verified: Firebase has accepted an SMS
+code for that number. On success the lead is written to Firestore and filed into
+Telagus (CRM) — see `onConfirmCode` in `App.jsx`. There is no analytics or pixel
+in this build.
 
 ## Motion
 
@@ -76,9 +88,13 @@ skipped and every element lands on its final state.
 
 Pre-launch. Known gaps:
 
-- **Leads are not stored anywhere.** The number is genuinely verified (Firebase
-  SMS OTP — see `FIREBASE_SETUP.md`), but on success the form only navigates to
-  `/thank-you`. There is no backend, database or CRM, so nothing is persisted.
+- **`TELAGUS_WEBHOOK_SECRET` must be set on Netlify** or the CRM leg returns
+  503 and leads reach Firestore only. The secret is deliberately not in git and
+  not in the bundle — see `TELAGUS_SETUP.md`.
+- **No lead has been created in Telagus end to end yet.** The endpoint, the
+  secret and the full payload mapping are verified against the live API, but
+  the last step needs a real verification against a deploy — which is blocked
+  by the billing item below.
 - **Firebase phone auth is blocked on billing.** Verified: it returns
   `auth/billing-not-enabled` on the free Spark plan, and that blocks console test
   numbers too — so the flow cannot be exercised at all until the project is on

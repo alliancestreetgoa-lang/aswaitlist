@@ -13,6 +13,7 @@ import ThankYou from './ThankYou';
 import { ROUTES, readRoute, goToThankYou, homeHref, hashHref } from './routes';
 import { setSubmission } from './submission';
 import { saveLead } from './leadStore';
+import { sendLeadToTelagus } from './telagus';
 import {
   RECAPTCHA_CONTAINER_ID, toE164, sendVerificationCode, confirmVerificationCode,
   resetVerification,
@@ -229,11 +230,18 @@ function WebinarForm() {
    * verified number — a guessed or expired code throws and keeps the visitor
    * here with an error.
    *
-   * The lead is written to Firestore in the beforeSignOut window — the only
-   * moment the security rules allow it (they require the verified session and
-   * pin the phone to it). The catch keeps the write best-effort: a verified
-   * visitor always reaches the Thank You page, even if persisting the lead
-   * fails; the error goes to the console instead.
+   * The lead goes to two places inside the beforeSignOut window — the only
+   * moment either is permitted. Firestore is the durable record (its rules
+   * require the verified session and pin the phone to it); Telagus is the CRM
+   * the team actually works the lead in, reached through /api/lead so the
+   * webhook secret stays on the server (see telagus.js). Both are given the
+   * live credential and run in parallel, so the visitor waits for the slower
+   * of the two rather than the sum.
+   *
+   * Both are best-effort, and deliberately independent: a verified visitor
+   * always reaches the Thank You page, and one destination failing must not
+   * take the other down with it. Failures go to the console — and, for the CRM
+   * leg, to the Netlify function log, which is where the useful detail is.
    *
    * setStep(3) stays: it keeps the step machine coherent, and leaves the inline
    * confirmation panel as a fallback if navigation is ever blocked.
@@ -245,11 +253,15 @@ function WebinarForm() {
     setError('');
     try {
       await confirmVerificationCode(code, {
-        beforeSignOut: () =>
-          // e164, not fullPhone: the rules pin the stored phone to the exact
+        beforeSignOut: async (credential) => {
+          // e164, not fullPhone: both destinations pin the lead to the exact
           // number Firebase verified, and that token is E.164.
-          saveLead({ firstName, lastName, email, phone: e164 })
-            .catch((err) => console.error('[lead store]', err)),
+          const lead = { firstName, lastName, email, phone: e164, country };
+          await Promise.all([
+            saveLead(lead).catch((err) => console.error('[lead store]', err)),
+            sendLeadToTelagus(lead, credential?.user).catch((err) => console.error('[telagus]', err)),
+          ]);
+        },
       });
     } catch (err) {
       setError(err.message);

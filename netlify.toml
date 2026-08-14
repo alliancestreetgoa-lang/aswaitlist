@@ -11,6 +11,14 @@
   # below 20.19 can never break the build.
   NODE_VERSION = "22"
 
+# The one piece of server we run: the Telagus lead proxy, which holds the CRM
+# webhook secret that must never reach the browser. It declares its own public
+# path ('/api/lead') via the Functions 2.0 `config` export, so there is no
+# redirect for it here. See netlify/functions/lead.js.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # Still no SPA catch-all on purpose: the legal routes are hash-based
 # ('#/privacy', '#/terms'), so every request is for '/' and the server never
 # sees them. A catch-all would also turn genuine typos into a 200 home page.
