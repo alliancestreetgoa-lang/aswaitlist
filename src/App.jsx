@@ -12,6 +12,7 @@ import { LegalPage } from './LegalPages';
 import ThankYou from './ThankYou';
 import { ROUTES, readRoute, goToThankYou, homeHref, hashHref } from './routes';
 import { setSubmission } from './submission';
+import { trackWaitlistConversion } from './analytics';
 import { saveLead } from './leadStore';
 import { sendLeadToTelagus } from './telagus';
 import {
@@ -271,6 +272,10 @@ function WebinarForm() {
     setConfirming(false);
     setStep(3);
     setSubmission({ email, phone: fullPhone });
+    // Reported here, not on /thank-you: this is the one place that runs exactly
+    // once per phone-verified submission, so it can't be replayed by reloading
+    // or sharing the thank-you URL. See analytics.js.
+    trackWaitlistConversion();
     goToThankYou();
   };
 
