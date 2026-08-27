@@ -15,6 +15,7 @@ import { setSubmission } from './submission';
 import { trackWaitlistConversion } from './analytics';
 import { saveLead } from './leadStore';
 import { sendLeadToTelagus } from './telagus';
+import { getAttribution } from './attribution';
 import {
   RECAPTCHA_CONTAINER_ID, toE164, sendVerificationCode, confirmVerificationCode,
   resetVerification,
@@ -257,7 +258,13 @@ function WebinarForm() {
         beforeSignOut: async (credential) => {
           // e164, not fullPhone: both destinations pin the lead to the exact
           // number Firebase verified, and that token is E.164.
-          const lead = { firstName, lastName, email, phone: e164, country };
+          // attribution: the first-touch traffic source captured on landing
+          // (Instagram / Google Ads / YouTube / …), so both stores can say
+          // where each lead came from. See attribution.js.
+          const lead = {
+            firstName, lastName, email, phone: e164, country,
+            attribution: getAttribution(),
+          };
           await Promise.all([
             saveLead(lead).catch((err) => console.error('[lead store]', err)),
             sendLeadToTelagus(lead, credential?.user).catch((err) => console.error('[telagus]', err)),

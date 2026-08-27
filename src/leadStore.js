@@ -13,7 +13,7 @@ import { loadFirebaseAuth } from './firebase';
  * confirmVerificationCode's sign-out — which is why App.jsx passes the lead
  * into the confirm step rather than saving afterwards.
  */
-export async function saveLead({ firstName, lastName, email, phone }) {
+export async function saveLead({ firstName, lastName, email, phone, attribution }) {
   // Reuses the already-initialised app; this only pulls the firestore chunk.
   await loadFirebaseAuth();
   const { getFirestore, collection, addDoc, serverTimestamp } = await import('firebase/firestore');
@@ -23,6 +23,17 @@ export async function saveLead({ firstName, lastName, email, phone }) {
     lastName: lastName.trim(),
     email: email.trim(),
     phone,
+    // Where this lead came from (see attribution.js). Stored flat rather than
+    // as a map so the console list view and exports can filter on `source`
+    // directly. The rules cap each field; all are strings, '' when unknown.
+    source: attribution?.source || 'direct',
+    utmSource: attribution?.utmSource || '',
+    utmMedium: attribution?.utmMedium || '',
+    utmCampaign: attribution?.utmCampaign || '',
+    utmContent: attribution?.utmContent || '',
+    gclid: attribution?.gclid || '',
+    referrer: attribution?.referrer || '',
+    landingPage: attribution?.landingPage || '',
     // Server-stamped; the rules reject anything else.
     createdAt: serverTimestamp(),
   });

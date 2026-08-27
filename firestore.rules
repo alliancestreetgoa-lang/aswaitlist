@@ -6,6 +6,15 @@ rules_version = '2';
 // credentials) — an ad-traffic landing page has no business reading leads back.
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Attribution fields (see src/attribution.js) are free-text echoes of the
+    // landing URL, so they are only ever bounded strings here — '' when
+    // unknown. Length mirrors MAX_LEN in attribution.js. Absence is allowed:
+    // visitors on a cached pre-attribution bundle still send the old five-field
+    // shape, and their leads must keep landing.
+    function attrStr(data, key) {
+      return !(key in data) || (data[key] is string && data[key].size() <= 200);
+    }
+
     match /waitlist/{leadId} {
       allow create: if
         // Only a signed-in visitor, which on this site can only mean someone
@@ -15,7 +24,19 @@ service cloud.firestore {
         // the client cannot claim a different one.
         && request.resource.data.phone == request.auth.token.phone_number
         // Exactly these fields, no extras.
-        && request.resource.data.keys().hasOnly(['firstName', 'lastName', 'email', 'phone', 'createdAt'])
+        && request.resource.data.keys().hasOnly([
+          'firstName', 'lastName', 'email', 'phone', 'createdAt',
+          'source', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent',
+          'gclid', 'referrer', 'landingPage',
+        ])
+        && attrStr(request.resource.data, 'source')
+        && attrStr(request.resource.data, 'utmSource')
+        && attrStr(request.resource.data, 'utmMedium')
+        && attrStr(request.resource.data, 'utmCampaign')
+        && attrStr(request.resource.data, 'utmContent')
+        && attrStr(request.resource.data, 'gclid')
+        && attrStr(request.resource.data, 'referrer')
+        && attrStr(request.resource.data, 'landingPage')
         && request.resource.data.firstName is string
         && request.resource.data.firstName.size() > 0
         && request.resource.data.firstName.size() <= 100

@@ -23,7 +23,7 @@ const ENDPOINT = '/api/lead';
 // a dead endpoint can't hold the visitor on "Verifying…" indefinitely.
 const TIMEOUT_MS = 12000;
 
-export async function sendLeadToTelagus({ firstName, lastName, email, phone, country }, user) {
+export async function sendLeadToTelagus({ firstName, lastName, email, phone, country, attribution }, user) {
   if (!user) throw new Error('Telagus: no verified session to authenticate the lead with.');
 
   // Fetched fresh from the live session — the proxy checks it with Google and
@@ -40,6 +40,10 @@ export async function sendLeadToTelagus({ firstName, lastName, email, phone, cou
       email: email.trim(),
       phone,
       country,
+      // First-touch traffic source (see attribution.js). The proxy validates
+      // and folds this into the CRM's lead_source + message, so the team can
+      // see per lead whether it came from Instagram, Google Ads or YouTube.
+      attribution,
     }),
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });

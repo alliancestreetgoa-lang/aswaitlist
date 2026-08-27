@@ -35,9 +35,10 @@ const DEFAULT_ENDPOINT = 'https://api.telagus.com/api/webhooks/11/lead';
 // which is the whole reason we call it rather than decoding the JWT ourselves.
 const IDENTITY_TOOLKIT = 'https://identitytoolkit.googleapis.com/v1/accounts:lookup';
 
-// A request body is four short strings and a token. Anything substantially
-// larger is not a lead, so it is rejected before it is parsed.
-const MAX_BODY_BYTES = 8192;
+// A request body is a handful of short strings, a small attribution block and
+// a token. Anything substantially larger is not a lead, so it is rejected
+// before it is parsed.
+const MAX_BODY_BYTES = 12288;
 
 // Upstream calls are bounded so a hanging dependency can't pin the function
 // open for its full timeout — the visitor is waiting on this.
@@ -83,6 +84,45 @@ function str(value, max) {
     : null;
 }
 
+/*
+ * The attribution block is best-effort context, never a reason to refuse a
+ * verified lead: unknown fields are dropped, oversized values truncated, and
+ * a missing/malformed block collapses to 'direct'. Mirrors src/attribution.js.
+ */
+const ATTR_FIELDS = ['source', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'gclid', 'referrer', 'landingPage'];
+const ATTR_MAX_LEN = 200;
+
+function cleanAttribution(raw) {
+  const attr = {};
+  for (const key of ATTR_FIELDS) {
+    const value = raw?.[key];
+    attr[key] = typeof value === 'string' ? value.trim().slice(0, ATTR_MAX_LEN) : '';
+  }
+  if (!attr.source) attr.source = 'direct';
+  return attr;
+}
+
+/*
+ * lead_source labels for the sources the campaign actually runs, so the CRM
+ * list view reads cleanly. Anything else (a new utm_source someone invents on
+ * the fly) still comes through, prefixed so it is obviously campaign-tagged.
+ */
+const SOURCE_LABELS = {
+  'google-ads': 'Google Ads',
+  instagram: 'Instagram',
+  youtube: 'YouTube',
+  facebook: 'Facebook',
+  twitter: 'Twitter / X',
+  linkedin: 'LinkedIn',
+  google: 'Google (organic)',
+  bing: 'Bing (organic)',
+  direct: 'Website',
+};
+
+function leadSourceLabel(source) {
+  return SOURCE_LABELS[source] || `Campaign: ${source}`;
+}
+
 /**
  * Confirms the ID token with Google and returns the phone number the session
  * was actually verified against. Throws if the token is missing, expired,
@@ -111,18 +151,35 @@ async function verifiedPhoneNumber(idToken, apiKey) {
  * longer qualification form — inventing values for them would put noise in the
  * CRM. Add them here when the form starts asking for them.
  */
-function buildPayload({ firstName, lastName, email, phone, country }, { ip, domain, position }) {
+function buildPayload({ firstName, lastName, email, phone, country, attribution }, { ip, domain, position }) {
   const countryName = COUNTRY_NAMES[country] || null;
+
+  // The message carries the full attribution trail: lead_source is one word
+  // for filtering, but campaign/medium/referrer detail belongs where the team
+  // reads the lead. Only lines with real values are added.
+  const attributionLines = [
+    ['Traffic source', attribution.source],
+    ['UTM campaign', attribution.utmCampaign],
+    ['UTM medium', attribution.utmMedium],
+    ['UTM content', attribution.utmContent],
+    ['Referrer', attribution.referrer],
+    ['Landing page', attribution.landingPage],
+    ['gclid', attribution.gclid],
+  ]
+    .filter(([, value]) => value)
+    .map(([label, value]) => `${label}: ${value}`)
+    .join('\n');
 
   return {
     lead: {
-      lead_source: 'Website',
+      lead_source: leadSourceLabel(attribution.source),
       lead_title: 'Priority Access Webinar — waitlist',
       form: 'Webinar Waitlist',
-      form_page: '/',
+      form_page: attribution.landingPage || '/',
       message:
         'Joined the priority list for the next Alliance Street webinar on UAE company '
-        + 'structures, international tax, banking and relocation. Mobile number verified by SMS.',
+        + 'structures, international tax, banking and relocation. Mobile number verified by SMS.'
+        + (attributionLines ? `\n\n${attributionLines}` : ''),
       lead_position_id: [position],
       ...(domain ? { domain } : {}),
       ...(ip ? { ip } : {}),
@@ -176,6 +233,7 @@ export default async (req, context) => {
   const email = str(body.email, 254);
   const phone = str(body.phone, 20);
   const country = typeof body.country === 'string' ? body.country.toUpperCase() : null;
+  const attribution = cleanAttribution(body.attribution);
 
   if (!firstName || !lastName) return json(400, { error: 'invalid_name' });
   if (!email || !EMAIL_RE.test(email)) return json(400, { error: 'invalid_email' });
@@ -198,7 +256,7 @@ export default async (req, context) => {
   }
 
   const payload = buildPayload(
-    { firstName, lastName, email, phone, country },
+    { firstName, lastName, email, phone, country, attribution },
     {
       ip: context?.ip || req.headers.get('x-nf-client-connection-ip') || null,
       domain: (() => {
