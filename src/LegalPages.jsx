@@ -308,9 +308,8 @@ export function TermsAndConditions() {
         </p>
         <p style={p}>
           Always take advice on your own situation from a suitably qualified
-          professional before acting. Any figures shown — including the headline
-          UAE statistics on this page — are general indicators, depend on
-          individual circumstances, and can change.
+          professional before acting. Any figures shown are general indicators,
+          depend on individual circumstances, and can change.
         </p>
       </div>
 

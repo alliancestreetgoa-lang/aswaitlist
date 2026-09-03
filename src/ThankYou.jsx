@@ -61,7 +61,8 @@ const STEPS = [
     note: (
       <>
         We&rsquo;re keeping it practical, relevant and focused on the questions
-        entrepreneurs actually have when considering Dubai and the UAE.
+        UK business owners actually have about how a UAE structure sits alongside
+        their UK position.
       </>
     ),
   },
@@ -69,7 +70,7 @@ const STEPS = [
     n: '03',
     Icon: CircleHelp,
     title: 'Bring your questions',
-    body: <>Company structure. Tax residency. UAE banking. Free Zones. Relocation.</>,
+    body: <>Company structure. UK tax residency. Management and control. Commercial substance. Personal circumstances.</>,
     note: (
       <>
         If there&rsquo;s something you&rsquo;ve been trying to figure out,{' '}
@@ -299,14 +300,14 @@ function TyAnticipation() {
           Setting up a company is the easy part. Building a structure that actually works
           around{' '}
           <strong style={{ color: BONE, fontWeight: 600 }}>
-            your business, residency, banking and tax position
+            your business, residency, personal circumstances and tax position
           </strong>{' '}
           is where things get interesting.
         </p>
         <p className="reveal" style={{ ...bodyCopy, maxWidth: '62ch', color: BONE_DIM }}>
           During the webinar, we&rsquo;ll break down the bigger picture so you can understand
           the opportunities, the potential mistakes and what you should be thinking about
-          before making your move.
+          before committing to a structure.
         </p>
         <p className="reveal" style={{
           margin: '6px 0 0', fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700,
@@ -344,8 +345,8 @@ function TyCta() {
           Ready to explore your <span style={{ color: RED }}>options already?</span>
         </h2>
         <p className="reveal" style={{ ...bodyCopy, maxWidth: '58ch', color: CARD_MUTED }}>
-          Maybe you&rsquo;re not just curious. Maybe Dubai has been on your mind for a while —
-          and you&rsquo;re ready to understand what the move could actually look like for{' '}
+          Maybe you&rsquo;re not just curious. Maybe the UAE has been on your mind for a while —
+          and you want to understand what a structure would actually look like for{' '}
           <strong style={{ color: CARD_INK, fontWeight: 600 }}>you and your business.</strong>
         </p>
         <p className="reveal" style={{ ...bodyCopy, maxWidth: '58ch', fontSize: 17, color: CARD_MUTED }}>

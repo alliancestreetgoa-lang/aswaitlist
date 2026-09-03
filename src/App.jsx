@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import {
-  CheckCircle2, ShieldCheck, Bell, Compass, Users, Building2, Landmark,
+  CheckCircle2, ShieldCheck, Compass, Building2, Landmark, FileSearch, Scale,
   Quote, ChevronDown, ChevronUp, Check, ArrowRight, BadgeCheck,
   Mail, Phone,
 } from 'lucide-react';
@@ -50,7 +50,8 @@ const COUNTRIES = [
 const FAQS = [
   ['Is this the final webinar registration?', 'No. This is the priority list. Registration details are sent separately once the next session date is confirmed.'],
   ['Does joining guarantee a place?', 'No. Places are limited and applicants are shortlisted based on relevance to the session topic.'],
-  ['Is it free to join?', 'Yes. Joining the priority list is free and carries no obligation.'],
+  ['Is it free to join?', 'Yes. The priority list and the live session are both free, with no obligation.'],
+  ['Is this only relevant if I’m planning to move to the UAE?', 'No. The session is for UK business owners weighing up whether a UAE structure makes sense at all, including those who conclude that it doesn’t.'],
   ['Why do I need to verify my number?', 'We text you a one-time code. Verifying makes sure webinar updates reach the correct person and reduces false or duplicate entries.'],
   ['When will I receive an update?', 'You will hear from us as soon as the next session date is released, by email and SMS.'],
   ['Can I speak with someone before the webinar?', 'Yes. After joining the waitlist, you may book a consultation if your situation is time-sensitive.'],
@@ -386,7 +387,9 @@ function WebinarForm() {
             width: '100%', height: 46, borderRadius: 12, color: WHITE,
             fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em',
             fontSize: 20, cursor: 'pointer',
-          }}>Continue</button>
+          }}>Join the Priority List</button>
+
+          <span style={{ fontSize: 14, color: GLASS_DIM }}>Be first to receive the next webinar date and registration details.</span>
 
           <span style={{ fontSize: 12, lineHeight: 1.5, color: GLASS_DIM }}>Your details will be used to assess whether the upcoming webinar is relevant to you. Selected participants will receive registration information by email and SMS.</span>
         </div>
@@ -463,21 +466,25 @@ function Hero() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, alignSelf: 'flex-start', border: '1px solid rgba(228,20,26,0.5)', background: 'rgba(228,20,26,0.12)', borderRadius: 999, padding: '9px 18px' }}>
             <span style={{ width: 7, height: 7, borderRadius: 999, background: '#E4141A', display: 'block' }} />
-            <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.14em', fontSize: 14, color: BONE }}>Priority Access Webinar Series</span>
+            <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.14em', fontSize: 14, color: BONE }}>Private Live Webinar for UK Entrepreneurs</span>
           </div>
 
           <h1 className="hero-title" style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(40px,4.2vw,68px)', lineHeight: 0.94, letterSpacing: '.005em', color: BONE, textWrap: 'balance' }}>
-            Join the Priority List for Our Next <span style={{ color: '#E4141A' }}>Live Webinar</span>
+            What if your tax position isn’t just about where you live — but <span style={{ color: '#E4141A' }}>how your business is structured?</span>
           </h1>
 
           <div className="hero-rule" style={{ width: 64, height: 3, background: '#E4141A' }} />
 
-          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>Alliance Street hosts private live sessions for UK and internationally active business owners who want to understand UAE company structures, international tax considerations, banking, relocation, and business expansion more clearly.</p>
+          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>Most UK business owners looking at the UAE are told about companies, visas and tax rates.</p>
 
-          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>Register your interest below. When the next session is released, shortlisted applicants will be among the first to receive the registration details.</p>
+          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>What is explained far less clearly is what actually has to change for a UAE structure to make sense alongside your UK tax position — and what HMRC may still look at after the company has been opened.</p>
+
+          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>In this live session, Stallone Shaikh breaks down the difference between <span style={{ color: BONE, fontWeight: 600 }}>setting up in the UAE</span> and <span style={{ color: BONE, fontWeight: 600 }}>structuring things properly</span>.</p>
+
+          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE, fontWeight: 500, textWrap: 'pretty' }}>Join the priority list for first access to the next live session.</p>
 
           <div className="asc-checks hero-checks" style={{ display: 'flex', flexWrap: 'wrap', gap: 22, marginTop: 2 }}>
-            {['Free to join', 'Priority notification', 'No obligation'].map((t) => (
+            {['Free live session', 'Built for UK business owners', 'Live Q&A'].map((t) => (
               <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <CheckCircle2 size={20} style={{ color: '#E4141A' }} />
                 <span style={{ fontFamily: "'Barlow',sans-serif", fontWeight: 500, fontSize: 17, color: BONE }}>{t}</span>
@@ -486,9 +493,9 @@ function Hero() {
           </div>
 
           <div className="asc-stat-card hero-stat asc-card asc-glass asc-glass--on-photo" style={{ marginTop: 4, display: 'inline-flex', flexWrap: 'wrap', gap: 30, alignSelf: 'flex-start', borderRadius: 16, padding: '16px 24px' }}>
-            {[[0, '%', 'Personal income tax'], [100, '%', 'Foreign ownership'], [8, ' HRS', 'London to Dubai']].map(([value, suffix, label]) => (
-              <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span className="stat-number" data-count={value} data-suffix={suffix} style={{ fontFamily: "'Anton',sans-serif", fontSize: 28, lineHeight: 1, color: '#E4141A' }}>0{suffix}</span>
+            {[['UK Tax Position', 'What still matters'], ['UAE Structure', 'What actually changes'], ['HMRC & Compliance', 'What must stand up']].map(([title, label]) => (
+              <div key={title} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span style={{ fontFamily: "'Anton',sans-serif", fontSize: 28, lineHeight: 1, textTransform: 'uppercase', color: '#E4141A' }}>{title}</span>
                 <span style={{ fontSize: 12, letterSpacing: '.10em', textTransform: 'uppercase', color: GLASS_DIM }}>{label}</span>
               </div>
             ))}
@@ -503,15 +510,24 @@ function Hero() {
 
 function Why() {
   const items = [
-    [Bell, 'Priority Notification', 'Be among the first to know when the next webinar date is announced.'],
-    [Compass, 'Practical Guidance', 'Learn through real business scenarios, common structuring mistakes, and practical examples.'],
-    [Users, 'Live Access', 'Shortlisted attendees may receive access to live explanations and Q&A opportunities.'],
+    [Building2, 'A UAE Company Is Only the Start', [
+      'Opening a company in the UAE does not automatically change your UK tax position.',
+      'Understand why your personal circumstances, business activity and the way the company actually operates still matter.',
+    ]],
+    [FileSearch, 'HMRC Looks Beyond the Paperwork', [
+      'Where decisions are made, what the UAE company actually does and whether the arrangement has genuine commercial substance can all matter.',
+      'The webinar explains why the reality behind the structure is more important than the licence itself.',
+    ]],
+    [Scale, 'Not Every Business Should Do This', [
+      'A UAE structure can make sense for certain businesses and make very little sense for others.',
+      'Learn the questions that should be answered before you spend money setting anything up.',
+    ]],
   ];
   return (
     <section id="why" className="asc-pad asc-sec" style={{ padding: '88px 48px 96px', background: LIGHT_BG }}>
       <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 44 }}>
         <h2 className="split-head" style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.4vw,52px)', lineHeight: 1, letterSpacing: '.005em', color: CARD_INK }}>
-          Why join the <span style={{ color: '#E4141A' }}>priority list</span>
+          Why this session <span style={{ color: '#E4141A' }}>matters</span>
         </h2>
         <div className="asc-why-grid js-why-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 28 }}>
           {items.map(([Icon, title, body]) => (
@@ -521,7 +537,9 @@ function Why() {
                 <Icon size={22} style={{ color: '#E4141A' }} />
               </span>
               <h3 style={{ margin: 0, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.03em', fontSize: 24, lineHeight: 1.1, color: CARD_INK }}>{title}</h3>
-              <p style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: '#4A4A52', textWrap: 'pretty' }}>{body}</p>
+              {body.map((para) => (
+                <p key={para} style={{ margin: 0, fontSize: 17, lineHeight: 1.6, color: '#4A4A52', textWrap: 'pretty' }}>{para}</p>
+              ))}
             </div>
           ))}
         </div>
@@ -532,10 +550,10 @@ function Why() {
 
 function Cover() {
   const items = [
-    [Building2, 'How UAE business structures work'],
-    [Compass, 'When a UAE setup may or may not make sense'],
-    [ShieldCheck, 'Common international tax and compliance mistakes'],
-    [Landmark, 'Banking, relocation, and growth considerations'],
+    [Building2, 'The difference between moving invoices and building a genuine cross-border business'],
+    [Compass, 'When a UAE structure genuinely makes commercial sense, and when it doesn’t'],
+    [ShieldCheck, 'Why some UAE structures hold up and others don’t'],
+    [Landmark, 'How UK tax residency and personal circumstances change the answer'],
   ];
   return (
     <section id="cover" className="asc-pad asc-sec" style={{ position: 'relative', overflow: 'hidden', padding: '88px 48px 96px', background: BG }}>
@@ -562,9 +580,9 @@ function Cover() {
 }
 
 function Strategy() {
-  const points = ['Strategic Planning', 'Expert Legal Counsel', 'Streamlined Process'];
+  const points = ['Management and control', 'Commercial substance', 'Genuine business activity'];
   const stats = [
-    [200, 'Business Structures Built'],
+    [200, 'Cross-Border Structures Advised On'],
     [20, 'Tax Lawyers & Strategists'],
     [17, 'Years Experience'],
   ];
@@ -574,11 +592,11 @@ function Strategy() {
         <div className="asc-strategy-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.05fr)', gap: 64, alignItems: 'center' }}>
           <div className="strategy-copy" style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'flex-start' }}>
             <h2 className="split-head" style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.4vw,52px)', lineHeight: 1, color: CARD_INK }}>
-              Strategy &amp; <span style={{ color: '#E4141A' }}>Business Setup</span>
+              Structure &amp; <span style={{ color: '#E4141A' }}>Substance</span>
             </h2>
             <div style={{ width: 64, height: 3, background: '#E4141A' }} />
             <p style={{ margin: 0, maxWidth: '58ch', fontSize: 17, lineHeight: 1.65, color: CARD_MUTED, textWrap: 'pretty' }}>
-              Setting up a new business in Dubai can be complex, especially for international entrepreneurs. We manage the entire process by handling all the necessary paperwork, ensuring you get approved for your business licence — all from the comfort of your home.
+              We don’t start with the licence. We start with where the business is actually run, what the UAE entity really does, and how that interacts with your UK tax residency and personal circumstances. It is why two similar-looking businesses can end up with different answers, and why this session is about principles rather than a package.
             </p>
             <ul style={{ listStyle: 'none', margin: '4px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
               {points.map((point) => (
@@ -593,7 +611,7 @@ function Strategy() {
           <div className="strategy-media" style={{ width: '100%', aspectRatio: '16/10', borderRadius: 22, overflow: 'hidden', boxShadow: '0 22px 50px rgba(228,20,26,.20)' }}>
             <img
               src={asset('images/strategy-setup.jpg')}
-              alt="Alliance Street advisers reviewing a client's Dubai company setup"
+              alt="Alliance Street advisers reviewing a client's UK–UAE structure"
               loading="lazy"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
@@ -638,7 +656,7 @@ function Host() {
           <h2 style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.4vw,52px)', lineHeight: 1, color: BONE }}>Hosted by Stallone Shaikh</h2>
           <span style={{ fontSize: 19, color: BONE_DIM }}>Founder, Alliance Street Group</span>
           <div style={{ width: 64, height: 3, background: '#E4141A', margin: '6px 0' }} />
-          <p style={{ margin: 0, maxWidth: 640, fontSize: 18, lineHeight: 1.65, color: BONE_DIM, textWrap: 'pretty' }}>Stallone works with entrepreneurs, internationally active businesses, and investors seeking practical guidance on UAE company formation, banking, international expansion, and compliant cross-border business structures.</p>
+          <p style={{ margin: 0, maxWidth: 640, fontSize: 18, lineHeight: 1.65, color: BONE_DIM, textWrap: 'pretty' }}>Stallone works with UK entrepreneurs and internationally active business owners on cross-border structuring between the UK and the UAE. He focuses on how a UAE entity, UK tax residency and personal circumstances fit together in practice, and on when a structure holds up to scrutiny and when it doesn’t.</p>
           <div className="host-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, marginTop: 10 }}>
             <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--clear" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, borderRadius: 999, padding: '14px 28px' }}>Learn More About Alliance Street</a>
             <a href={LINKEDIN_PROFILE_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--clear" aria-label="Stallone Shaikh on LinkedIn (opens in a new tab)" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.04em', fontSize: 17, color: BONE, borderRadius: 999, padding: '14px 26px' }}>
@@ -658,9 +676,9 @@ function Credibility() {
       <div style={{ maxWidth: 1360, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 40 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <h2 className="split-head" style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.4vw,52px)', lineHeight: 1, color: BONE }}>
-            Credibility and <span style={{ color: '#E4141A' }}>reach</span>
+            Credibility and <span style={{ color: '#E4141A' }}>track record</span>
           </h2>
-          <p className="reveal" style={{ margin: 0, maxWidth: 660, fontSize: 17, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>Clients who have completed the process with Alliance Street, in their own words.</p>
+          <p className="reveal" style={{ margin: 0, maxWidth: 660, fontSize: 17, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>Business owners who have worked through their UK–UAE position with Alliance Street, in their own words.</p>
         </div>
         <div className="asc-why-grid js-testimonials" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 28, alignItems: 'stretch' }}>
           {TESTIMONIALS.map((t) => (
@@ -683,7 +701,7 @@ function Credibility() {
 }
 
 function Faq() {
-  const [open, setOpen] = useState(5);
+  const [open, setOpen] = useState(6);
   return (
     <section id="faq" className="asc-pad asc-sec" style={{ padding: '88px 48px 104px', background: LIGHT_BG }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 36 }}>
@@ -722,7 +740,7 @@ function Book() {
         <h2 className="split-head" style={{ margin: 0, fontFamily: "'Anton',sans-serif", fontWeight: 400, textTransform: 'uppercase', fontSize: 'clamp(34px,3.6vw,56px)', lineHeight: 1, color: BONE }}>
           Would You Rather <span style={{ color: '#E4141A' }}>Not Wait?</span>
         </h2>
-        <p className="reveal" style={{ margin: 0, maxWidth: 720, fontSize: 19, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>If you are currently considering a UAE company, international structure, relocation, banking solution, or business expansion, you can speak with our team before the webinar.</p>
+        <p className="reveal" style={{ margin: 0, maxWidth: 720, fontSize: 19, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>If you are already weighing up a UAE structure and need to understand how it would sit alongside your UK tax position now, you can speak with our team before the webinar.</p>
         <div className="asc-cta-row book-cta" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16, marginTop: 8 }}>
           <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="asc-btn-glass asc-btn-glass--red" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Barlow Condensed',sans-serif",
@@ -747,7 +765,7 @@ function Footer() {
       <div className="asc-footer-grid reveal-group" style={{ maxWidth: 1360, margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr)', gap: 48 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18, maxWidth: 420 }}>
           <Logo />
-          <span style={{ fontSize: 16, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>Company formation, international structuring, banking and relocation guidance for internationally active business owners.</span>
+          <span style={{ fontSize: 16, lineHeight: 1.6, color: BONE_DIM, textWrap: 'pretty' }}>Cross-border structuring and UK–UAE tax positioning for UK entrepreneurs and internationally active business owners.</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 4 }}>
             <a href="mailto:info@alliancestreet.ae" className="asc-footer-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontSize: 16, color: BONE }}>
               <Mail size={18} style={{ color: '#E4141A', flex: 'none' }} />info@alliancestreet.ae
