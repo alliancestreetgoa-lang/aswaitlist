@@ -475,11 +475,11 @@ function Hero() {
 
           <div className="hero-rule" style={{ width: 64, height: 3, background: '#E4141A' }} />
 
-          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>Most UK business owners looking at the UAE are told about companies, visas and tax rates.</p>
+          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>Most UK business owners looking at the UAE hear about company setup, visas and lower tax rates.</p>
 
-          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>What is explained far less clearly is what actually has to change for a UAE structure to make sense alongside your UK tax position — and what HMRC may still look at after the company has been opened.</p>
+          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>What they are often not told is what actually needs to change for a UAE setup to work properly with their UK tax position, and what HMRC may still look at even after the UAE company is set up.</p>
 
-          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>In this live session, Stallone Shaikh breaks down the difference between <span style={{ color: BONE, fontWeight: 600 }}>setting up in the UAE</span> and <span style={{ color: BONE, fontWeight: 600 }}>structuring things properly</span>.</p>
+          <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE_DIM, textWrap: 'pretty' }}>In this live session, Stallone Shaikh breaks down the difference between <span style={{ color: BONE, fontWeight: 600 }}>setting up a company in the UAE</span> and <span style={{ color: BONE, fontWeight: 600 }}>structuring correctly to legally reduce taxes</span>.</p>
 
           <p className="hero-copy" style={{ margin: 0, maxWidth: 560, fontSize: 17, lineHeight: 1.55, color: BONE, fontWeight: 500, textWrap: 'pretty' }}>Join the priority list for first access to the next live session.</p>
 
