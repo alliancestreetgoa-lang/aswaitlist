@@ -123,6 +123,38 @@ function leadSourceLabel(source) {
   return SOURCE_LABELS[source] || `Campaign: ${source}`;
 }
 
+/*
+ * form_page is sent as an absolute URL so the CRM row is clickable — the team
+ * should not have to join `domain` and a bare path in their head.
+ *
+ * leads.form_page is varchar(191) upstream, so a composed URL that would
+ * overflow drops back to the path, which always fits. Scheme is fixed https:
+ * the site is HTTPS-only in every deploy that has this function.
+ */
+const MAX_FORM_PAGE = 191;
+
+function formPageUrl(landingPage, domain) {
+  // The client posts this value, so it is not necessarily a clean path. Now
+  // that the field reads as a link in the CRM, an absolute URL from the client
+  // is reduced to its path — nobody on the team should be handed an off-site
+  // link that a submitter chose.
+  let raw = landingPage || '';
+  if (/^(https?:)?\/\//i.test(raw)) {
+    try {
+      const parsed = new URL(raw, 'https://placeholder.invalid');
+      raw = parsed.pathname + parsed.search;
+    } catch {
+      raw = '';
+    }
+  }
+  const path = raw
+    ? (raw.startsWith('/') ? raw : `/${raw}`)
+    : '/';
+  if (!domain) return path.slice(0, MAX_FORM_PAGE);
+  const absolute = `https://${domain}${path}`;
+  return absolute.length <= MAX_FORM_PAGE ? absolute : path.slice(0, MAX_FORM_PAGE);
+}
+
 /**
  * Confirms the ID token with Google and returns the phone number the session
  * was actually verified against. Throws if the token is missing, expired,
@@ -175,7 +207,7 @@ function buildPayload({ firstName, lastName, email, phone, country, attribution 
       lead_source: leadSourceLabel(attribution.source),
       lead_title: 'Priority Access Webinar — waitlist',
       form: 'Webinar Waitlist',
-      form_page: attribution.landingPage || '/',
+      form_page: formPageUrl(attribution.landingPage, domain),
       message:
         'Joined the priority list for the next Alliance Street webinar on UAE company '
         + 'structures, international tax, banking and relocation. Mobile number verified by SMS.'

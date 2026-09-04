@@ -64,7 +64,7 @@ public by design — do not confuse the two groups.
 | Work email | `contacts[0].email` |
 | Verified mobile (E.164) | `contacts[0].phone_number` |
 | Country selector | `contacts[0].country` (resolved from the ISO code **in the function**, so the CRM only ever sees a vocabulary this side controls) |
-| — | `lead.lead_source: "Website"`, `lead.form: "Webinar Waitlist"`, `lead.lead_title`, `lead.form_page`, `lead.message`, `lead.lead_position_id: ["Leads"]`, `lead.domain`, `lead.ip` |
+| — | `lead.lead_source: "Website"`, `lead.form: "Webinar Waitlist"`, `lead.lead_title`, `lead.form_page` (the **full landing URL**, `https://<domain><path+query>`, composed in the function so the CRM row is clickable), `lead.message`, `lead.lead_position_id: ["Leads"]`, `lead.domain`, `lead.ip` |
 
 `companies` is omitted because the form collects no company details, and
 `custom_fields` is omitted because every custom field on this account belongs
