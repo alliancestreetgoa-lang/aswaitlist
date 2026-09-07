@@ -63,9 +63,32 @@ public by design — do not confuse the two groups.
 | Last name | `contacts[0].last_name` |
 | Work email | `contacts[0].email` |
 | Verified mobile (E.164) | `contacts[0].phone_number` |
-| Landing URL (first touch) | `lead.form_page` — `https://<domain><path+query>`, composed in the function so the CRM row is clickable. Telagus caps this field at **191 chars** and 422s the whole lead beyond it (seen live Sep 6 2026), so when the absolute URL would overflow the bare path is sent instead, itself cut to 191. The full landing page is also in `lead.message`. |
+| Landing URL (first touch) | `lead.form_page` — `https://<domain><path+query>`, composed in the function so the CRM row is clickable. Opaque click ids (`fbclid`, `gclid`, `gbraid`, `wbraid`, `msclkid`, `dclid`, `ttclid`) are stripped: they are unreadable to the team and long enough to blow the cap alone (an fbclid runs ~150 chars). Telagus caps this field at **191 chars** and 422s the whole lead beyond it (seen live Sep 6 2026), so what remains is cut to 191 — the domain is never the part dropped. The full landing page, click ids included, is in `lead.message`. |
 | Country selector | `contacts[0].country` (resolved from the ISO code **in the function**, so the CRM only ever sees a vocabulary this side controls) |
-| — | `lead.lead_source: "Website"`, `lead.form: "Webinar Waitlist"`, `lead.lead_title`, `lead.form_page` (see above), `lead.message`, `lead.lead_position_id: ["Leads"]`, `lead.domain`, `lead.ip` |
+| Traffic source | `lead.lead_source` — the channel label the CRM list is filtered by (see below). |
+| — | `lead.form: "Webinar Waitlist"`, `lead.lead_title`, `lead.form_page` (see above), `lead.message`, `lead.lead_position_id: ["Leads"]`, `lead.domain`, `lead.ip` |
+
+### `lead_source` labels
+
+One channel must produce one label, or filtering the CRM by channel silently
+misses leads. `utm_source` is free text, so the same channel arrives spelled
+several ways — `SOURCE_ALIASES` in `buildPayload()`'s module folds them onto a
+canonical source before `SOURCE_LABELS` names it:
+
+| Arrives as | Filed as |
+|---|---|
+| `fb`, `facebook`, `fb_ads`, `meta`, or an `fbclid` with no UTMs | `Facebook` |
+| `ig`, `instagram`, `ig-ads` | `Instagram` |
+| `adwords`, `gads`, `googleads`, or any `gclid` | `Google Ads` |
+| `google` with an organic medium | `Google (organic)` |
+| no campaign tag at all | `Website` |
+
+Anything unrecognised comes through as `Campaign: <source>` rather than being
+dropped — that is the cue to add it to the alias or label map. This mattered
+live: a Meta campaign tagged `utm_source=fb` filed as `Campaign: fb` while
+clicks on the same ad that carried only an `fbclid` filed as `Facebook`, so
+Facebook leads appeared to be missing when they were under the other label
+(reported 7 Sep 2026).
 
 `companies` is omitted because the form collects no company details, and
 `custom_fields` is omitted because every custom field on this account belongs
@@ -134,3 +157,8 @@ A `422` names the field in the log body, e.g. `lead.form_page ... must not be
 greater than 191 characters` — Telagus enforces per-field length caps it does
 not document. Cap the value in `buildPayload()` and add a case to
 `test/lead.test.mjs`.
+
+If a `form_page` in the CRM looks truncated, check what was sacrificed before
+changing the cap: `formPageUrl()` drops the click ids first and only then cuts,
+so a shortened URL still carries the domain and the `utm_*` params. A row that
+shows a bare path with no domain predates that fix (before 7 Sep 2026).
