@@ -92,15 +92,6 @@ function str(value, max) {
 const ATTR_FIELDS = ['source', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'gclid', 'referrer', 'landingPage'];
 const ATTR_MAX_LEN = 200;
 
-/*
- * Telagus caps lead.form_page at 191 characters and rejects the whole lead
- * with a 422 when it is longer — observed live, not documented. An ad landing
- * URL (utm_* plus a ~90-char gclid) routinely exceeds that, and until this cap
- * every such lead bounced while Firestore, which has no limit, kept it. The
- * untruncated landing page still reaches the CRM in the message body.
- */
-const TELAGUS_FORM_PAGE_MAX = 191;
-
 function cleanAttribution(raw) {
   const attr = {};
   for (const key of ATTR_FIELDS) {
@@ -130,6 +121,44 @@ const SOURCE_LABELS = {
 
 function leadSourceLabel(source) {
   return SOURCE_LABELS[source] || `Campaign: ${source}`;
+}
+
+/*
+ * form_page is sent as an absolute URL so the CRM row is clickable — the team
+ * should not have to join `domain` and a bare path in their head.
+ *
+ * leads.form_page is varchar(191) upstream, so a composed URL that would
+ * overflow drops back to the path, which always fits. Scheme is fixed https:
+ * the site is HTTPS-only in every deploy that has this function.
+ *
+ * The cap is not theoretical: with the bare landing path (up to 200 chars)
+ * sent here, Telagus rejected every ad-click lead with
+ *   422 {"lead.form_page":["... must not be greater than 191 characters."]}
+ * (function log, 6 Sep 2026) while Firestore, which has no such limit, kept
+ * them. The untruncated landing page still reaches the CRM in the message.
+ */
+const MAX_FORM_PAGE = 191;
+
+function formPageUrl(landingPage, domain) {
+  // The client posts this value, so it is not necessarily a clean path. Now
+  // that the field reads as a link in the CRM, an absolute URL from the client
+  // is reduced to its path — nobody on the team should be handed an off-site
+  // link that a submitter chose.
+  let raw = landingPage || '';
+  if (/^(https?:)?\/\//i.test(raw)) {
+    try {
+      const parsed = new URL(raw, 'https://placeholder.invalid');
+      raw = parsed.pathname + parsed.search;
+    } catch {
+      raw = '';
+    }
+  }
+  const path = raw
+    ? (raw.startsWith('/') ? raw : `/${raw}`)
+    : '/';
+  if (!domain) return path.slice(0, MAX_FORM_PAGE);
+  const absolute = `https://${domain}${path}`;
+  return absolute.length <= MAX_FORM_PAGE ? absolute : path.slice(0, MAX_FORM_PAGE);
 }
 
 /**
@@ -184,7 +213,7 @@ export function buildPayload({ firstName, lastName, email, phone, country, attri
       lead_source: leadSourceLabel(attribution.source),
       lead_title: 'Priority Access Webinar — waitlist',
       form: 'Webinar Waitlist',
-      form_page: (attribution.landingPage || '/').slice(0, TELAGUS_FORM_PAGE_MAX),
+      form_page: formPageUrl(attribution.landingPage, domain),
       message:
         'Joined the priority list for the next Alliance Street webinar on UAE company '
         + 'structures, international tax, banking and relocation. Mobile number verified by SMS.'

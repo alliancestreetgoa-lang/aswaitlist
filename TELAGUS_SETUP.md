@@ -63,9 +63,9 @@ public by design — do not confuse the two groups.
 | Last name | `contacts[0].last_name` |
 | Work email | `contacts[0].email` |
 | Verified mobile (E.164) | `contacts[0].phone_number` |
-| Landing URL (path + query, first touch) | `lead.form_page`, **cut to 191 chars** — Telagus's undocumented limit; longer values 422 the whole lead (seen live Sep 6 2026). The full URL is also in `lead.message`. |
+| Landing URL (first touch) | `lead.form_page` — `https://<domain><path+query>`, composed in the function so the CRM row is clickable. Telagus caps this field at **191 chars** and 422s the whole lead beyond it (seen live Sep 6 2026), so when the absolute URL would overflow the bare path is sent instead, itself cut to 191. The full landing page is also in `lead.message`. |
 | Country selector | `contacts[0].country` (resolved from the ISO code **in the function**, so the CRM only ever sees a vocabulary this side controls) |
-| — | `lead.lead_source: "Website"`, `lead.form: "Webinar Waitlist"`, `lead.lead_title`, `lead.form_page`, `lead.message`, `lead.lead_position_id: ["Leads"]`, `lead.domain`, `lead.ip` |
+| — | `lead.lead_source: "Website"`, `lead.form: "Webinar Waitlist"`, `lead.lead_title`, `lead.form_page` (see above), `lead.message`, `lead.lead_position_id: ["Leads"]`, `lead.domain`, `lead.ip` |
 
 `companies` is omitted because the form collects no company details, and
 `custom_fields` is omitted because every custom field on this account belongs
