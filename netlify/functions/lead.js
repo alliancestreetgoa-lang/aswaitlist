@@ -112,6 +112,7 @@ const SOURCE_LABELS = {
   instagram: 'Instagram',
   youtube: 'YouTube',
   facebook: 'Facebook',
+  tiktok: 'TikTok',
   twitter: 'Twitter / X',
   linkedin: 'LinkedIn',
   google: 'Google (organic)',
@@ -119,46 +120,101 @@ const SOURCE_LABELS = {
   direct: 'Website',
 };
 
+/*
+ * One channel, one label. utm_source is whatever the person building the ad
+ * typed, and the ad platforms themselves hand out short forms, so the same
+ * channel arrives under several spellings: a Meta campaign tagged
+ * `utm_source=fb` was filing leads as 'Campaign: fb' while a click on the same
+ * ad that carried only an fbclid classified as 'facebook' and filed as
+ * 'Facebook'. Filtering the CRM by channel could not work, and Facebook leads
+ * looked missing when they were sitting under the other label (reported
+ * 7 Sep 2026).
+ *
+ * Aliases fold the variants onto the canonical source before it is labelled.
+ * Keys are lowercase — classify() in src/attribution.js lowercases utm_source,
+ * and leadSourceLabel lowercases again in case a client did not.
+ *
+ * A source with no entry here is still not dropped: it comes through as
+ * 'Campaign: <source>', which is the signal to add it once it proves real.
+ */
+const SOURCE_ALIASES = {
+  fb: 'facebook',
+  'fb-ads': 'facebook',
+  fb_ads: 'facebook',
+  'facebook-ads': 'facebook',
+  facebook_ads: 'facebook',
+  meta: 'facebook',
+  'meta-ads': 'facebook',
+  ig: 'instagram',
+  'ig-ads': 'instagram',
+  ig_ads: 'instagram',
+  'instagram-ads': 'instagram',
+  yt: 'youtube',
+  adwords: 'google-ads',
+  gads: 'google-ads',
+  googleads: 'google-ads',
+  google_ads: 'google-ads',
+  'google-adwords': 'google-ads',
+  tt: 'tiktok',
+  'tiktok-ads': 'tiktok',
+  li: 'linkedin',
+  x: 'twitter',
+};
+
 function leadSourceLabel(source) {
-  return SOURCE_LABELS[source] || `Campaign: ${source}`;
+  const key = source.toLowerCase();
+  const canonical = SOURCE_ALIASES[key] || key;
+  // The fallback keeps the source as it arrived, so an unrecognised tag is
+  // readable in the CRM exactly as the campaign spelled it.
+  return SOURCE_LABELS[canonical] || `Campaign: ${source}`;
 }
 
 /*
  * form_page is sent as an absolute URL so the CRM row is clickable — the team
  * should not have to join `domain` and a bare path in their head.
  *
- * leads.form_page is varchar(191) upstream, so a composed URL that would
- * overflow drops back to the path, which always fits. Scheme is fixed https:
- * the site is HTTPS-only in every deploy that has this function.
- *
- * The cap is not theoretical: with the bare landing path (up to 200 chars)
- * sent here, Telagus rejected every ad-click lead with
+ * leads.form_page is varchar(191) upstream and Telagus rejects the whole lead
+ * past that with
  *   422 {"lead.form_page":["... must not be greater than 191 characters."]}
  * (function log, 6 Sep 2026) while Firestore, which has no such limit, kept
- * them. The untruncated landing page still reaches the CRM in the message.
+ * the same leads. So the composed URL is capped here.
+ *
+ * What gets sacrificed to that cap matters, and it is not the domain. A
+ * Facebook lead reported on 7 Sep 2026 arrived with form_page as a bare
+ * '/?fbclid=…' because the click id alone pushed the absolute URL to 228
+ * chars and the overflow path dropped the domain. The domain is the part a
+ * human needs; an opaque click id is the part they cannot read anyway. So the
+ * click ids go first, and only then is what remains cut.
+ *
+ * Nothing is lost by that: gclid and the untrimmed landing page are both in
+ * lead.message, and the traffic source is already resolved into lead_source.
  */
 const MAX_FORM_PAGE = 191;
 
+/*
+ * Machine-set click identifiers — Meta, Google (auto-tagging and its iOS
+ * variants), Microsoft, TikTok. Each is opaque to a reader and long enough to
+ * blow the cap on its own: an fbclid runs ~150 characters, a gclid ~90.
+ */
+const CLICK_ID_PARAMS = ['fbclid', 'gclid', 'gbraid', 'wbraid', 'msclkid', 'dclid', 'ttclid'];
+
 function formPageUrl(landingPage, domain) {
-  // The client posts this value, so it is not necessarily a clean path. Now
-  // that the field reads as a link in the CRM, an absolute URL from the client
-  // is reduced to its path — nobody on the team should be handed an off-site
-  // link that a submitter chose.
-  let raw = landingPage || '';
-  if (/^(https?:)?\/\//i.test(raw)) {
-    try {
-      const parsed = new URL(raw, 'https://placeholder.invalid');
-      raw = parsed.pathname + parsed.search;
-    } catch {
-      raw = '';
-    }
+  // The client posts this value, so it is not necessarily a clean path.
+  // Resolving against a placeholder origin reduces an absolute URL from the
+  // client to its path — nobody on the team should be handed an off-site link
+  // that a submitter chose — and normalises a relative one at the same time.
+  let path;
+  try {
+    const parsed = new URL(landingPage || '/', 'https://placeholder.invalid');
+    for (const key of CLICK_ID_PARAMS) parsed.searchParams.delete(key);
+    // parsed.search is '' once the last param is gone, so a URL that carried
+    // only a click id ends as a clean path rather than a dangling '?'.
+    path = parsed.pathname + parsed.search;
+  } catch {
+    path = '/';
   }
-  const path = raw
-    ? (raw.startsWith('/') ? raw : `/${raw}`)
-    : '/';
   if (!domain) return path.slice(0, MAX_FORM_PAGE);
-  const absolute = `https://${domain}${path}`;
-  return absolute.length <= MAX_FORM_PAGE ? absolute : path.slice(0, MAX_FORM_PAGE);
+  return `https://${domain}${path}`.slice(0, MAX_FORM_PAGE);
 }
 
 /**
