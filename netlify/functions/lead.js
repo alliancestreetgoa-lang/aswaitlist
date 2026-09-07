@@ -92,6 +92,15 @@ function str(value, max) {
 const ATTR_FIELDS = ['source', 'utmSource', 'utmMedium', 'utmCampaign', 'utmContent', 'gclid', 'referrer', 'landingPage'];
 const ATTR_MAX_LEN = 200;
 
+/*
+ * Telagus caps lead.form_page at 191 characters and rejects the whole lead
+ * with a 422 when it is longer — observed live, not documented. An ad landing
+ * URL (utm_* plus a ~90-char gclid) routinely exceeds that, and until this cap
+ * every such lead bounced while Firestore, which has no limit, kept it. The
+ * untruncated landing page still reaches the CRM in the message body.
+ */
+const TELAGUS_FORM_PAGE_MAX = 191;
+
 function cleanAttribution(raw) {
   const attr = {};
   for (const key of ATTR_FIELDS) {
@@ -151,7 +160,7 @@ async function verifiedPhoneNumber(idToken, apiKey) {
  * longer qualification form — inventing values for them would put noise in the
  * CRM. Add them here when the form starts asking for them.
  */
-function buildPayload({ firstName, lastName, email, phone, country, attribution }, { ip, domain, position }) {
+export function buildPayload({ firstName, lastName, email, phone, country, attribution }, { ip, domain, position }) {
   const countryName = COUNTRY_NAMES[country] || null;
 
   // The message carries the full attribution trail: lead_source is one word
@@ -175,7 +184,7 @@ function buildPayload({ firstName, lastName, email, phone, country, attribution 
       lead_source: leadSourceLabel(attribution.source),
       lead_title: 'Priority Access Webinar — waitlist',
       form: 'Webinar Waitlist',
-      form_page: attribution.landingPage || '/',
+      form_page: (attribution.landingPage || '/').slice(0, TELAGUS_FORM_PAGE_MAX),
       message:
         'Joined the priority list for the next Alliance Street webinar on UAE company '
         + 'structures, international tax, banking and relocation. Mobile number verified by SMS.'

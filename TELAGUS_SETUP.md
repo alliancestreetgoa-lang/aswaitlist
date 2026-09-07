@@ -63,6 +63,7 @@ public by design — do not confuse the two groups.
 | Last name | `contacts[0].last_name` |
 | Work email | `contacts[0].email` |
 | Verified mobile (E.164) | `contacts[0].phone_number` |
+| Landing URL (path + query, first touch) | `lead.form_page`, **cut to 191 chars** — Telagus's undocumented limit; longer values 422 the whole lead (seen live Sep 6 2026). The full URL is also in `lead.message`. |
 | Country selector | `contacts[0].country` (resolved from the ISO code **in the function**, so the CRM only ever sees a vocabulary this side controls) |
 | — | `lead.lead_source: "Website"`, `lead.form: "Webinar Waitlist"`, `lead.lead_title`, `lead.form_page`, `lead.message`, `lead.lead_position_id: ["Leads"]`, `lead.domain`, `lead.ip` |
 
@@ -128,3 +129,8 @@ told only that the lead did not land. Errors returned to the client:
 
 If every lead returns `upstream_rejected` with a `401` status in the log, the
 secret has been rotated: update `TELAGUS_WEBHOOK_SECRET` and redeploy.
+
+A `422` names the field in the log body, e.g. `lead.form_page ... must not be
+greater than 191 characters` — Telagus enforces per-field length caps it does
+not document. Cap the value in `buildPayload()` and add a case to
+`test/lead.test.mjs`.
