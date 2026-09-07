@@ -14,14 +14,25 @@
  *      youtube.com still names itself.
  *   4. Nothing → 'direct' (typed URL, DM'd link, bookmark).
  *
- * WHY localStorage, AND WHY FIRST-TOUCH: people rarely fill the form on the
- * visit that brought them. They land from an Instagram story, leave, and come
- * back tomorrow by typing the URL — at which point the query string and
- * referrer are gone. So the first visit writes its evidence to localStorage
- * and later visits leave it alone. One upgrade rule: a stored 'direct' (no
- * evidence at all) is overwritten by a later visit that DOES carry a known
- * source, so an untagged first peek doesn't permanently mask the campaign
- * click that actually converted them.
+ * WHY localStorage: people rarely fill the form on the visit that brought
+ * them. They land from an Instagram story, leave, and come back tomorrow by
+ * typing the URL — at which point the query string and referrer are gone. So a
+ * visit banks its evidence and a later, weaker visit leaves it alone.
+ *
+ * WHICH VISIT WINS — the strongest evidence, and the most recent at equal
+ * strength (see STRENGTH below). A visit that carries a campaign tag we handed
+ * out (utm_*, gclid, fbclid) is a deliberate click on a specific link, so it
+ * replaces whatever was stored: someone who saw the Instagram post in June and
+ * clicks the Facebook ad in September converted on Facebook, and the ad that
+ * was paid for should get the credit. Weaker visits never displace a tagged
+ * one: a bare referrer only says which site linked here, and an untagged
+ * return says nothing at all, so neither can erase a campaign.
+ *
+ * This is deliberately NOT pure first-touch. It used to be, and the effect was
+ * that the first tagged link a browser ever saw stuck permanently — every
+ * later campaign link filed its leads under the original source, with the
+ * original campaign name and landing page attached (reported 7 Sep 2026: a
+ * Facebook link recorded as instagram/'test').
  *
  * Everything returned is a plain string (empty when unknown), never null —
  * the Firestore rules and the Telagus proxy both validate a fixed shape, and
@@ -89,6 +100,20 @@ function classify({ utmSource, utmMedium, gclid, fbclid, referrer }) {
   return 'direct';
 }
 
+/*
+ * How much a visit's evidence is worth, for deciding whether it may replace
+ * what is already stored. Higher wins; an equal score means the newer visit
+ * wins, so re-clicking a channel's link refreshes its campaign and landing
+ * page rather than being ignored.
+ */
+const STRENGTH = { tagged: 3, referrer: 2, direct: 1 };
+
+function strengthOf({ utmSource, gclid, fbclid, referrer }) {
+  if (utmSource || gclid || fbclid) return STRENGTH.tagged;
+  if (referrerSource(referrer)) return STRENGTH.referrer;
+  return STRENGTH.direct;
+}
+
 function read() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -129,6 +154,7 @@ export function captureAttribution() {
 
   const record = {
     source: classify(evidence),
+    strength: strengthOf(evidence),
     utmSource: evidence.utmSource,
     utmMedium: evidence.utmMedium,
     utmCampaign: evidence.utmCampaign,
@@ -142,11 +168,17 @@ export function captureAttribution() {
   sessionRecord = record;
 
   const stored = read();
-  // First touch wins — except a stored 'direct', which a later visit with a
-  // real source is allowed to upgrade (see header comment).
-  if (!stored || (stored.source === 'direct' && record.source !== 'direct')) {
-    write(record);
-  }
+  // Records written before this field existed carry no strength; score them
+  // from what they did store, so an old first-touch entry still ranks.
+  const storedStrength = stored
+    ? (stored.strength || strengthOf({
+      utmSource: stored.utmSource,
+      gclid: stored.gclid,
+      fbclid: '',
+      referrer: stored.referrer,
+    }))
+    : 0;
+  if (record.strength >= storedStrength) write(record);
 }
 
 /**
